@@ -39,7 +39,7 @@ resource "aws_cloudfront_distribution" "site" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
   http_version        = "http2and3"
-  aliases             = [var.domain_name, local.www_domain]
+  aliases             = local.has_domain ? [var.domain_name, local.www_domain] : []
   comment             = "${var.project_name} site"
 
   origin {
@@ -96,10 +96,13 @@ resource "aws_cloudfront_distribution" "site" {
     }
   }
 
+  # Custom domain: the validated ACM cert. No domain: CloudFront's default *.cloudfront.net
+  # cert (which does not accept the ACM/SNI/TLS-min attributes, so they go null).
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate_validation.site.certificate_arn
-    ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
+    cloudfront_default_certificate = local.has_domain ? null : true
+    acm_certificate_arn            = local.has_domain ? aws_acm_certificate_validation.site[0].certificate_arn : null
+    ssl_support_method             = local.has_domain ? "sni-only" : null
+    minimum_protocol_version       = local.has_domain ? "TLSv1.2_2021" : null
   }
 }
 

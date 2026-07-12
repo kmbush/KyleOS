@@ -12,6 +12,11 @@ output "runtime_config" {
   }
 }
 
+output "site_url" {
+  description = "Reachable site URL: the custom domain when set, else the CloudFront URL."
+  value       = local.has_domain ? "https://${var.domain_name}" : "https://${aws_cloudfront_distribution.site.domain_name}"
+}
+
 output "site_bucket" {
   description = "Site bucket name; deploy.yml syncs the build here."
   value       = aws_s3_bucket.site.bucket

@@ -185,6 +185,15 @@ output "runtime_config" {
 
 DESIGN §6/§11 is confirmed. Points DESIGN under-specifies, called out for the builder:
 
+- **Custom domain is optional.** `domain_name` defaults to `""`. **Empty = deploy
+  CloudFront-URL-only:** no ACM certificate, no Route 53 lookup, no DNS records, and the
+  distribution uses the default `*.cloudfront.net` certificate with no aliases. This is
+  the correct forkable default (not every forker owns a domain) and is how Kyle's new
+  stack coexists with the old live site until the Phase 6 DNS cutover — applying with a
+  domain would fail (two distributions can't claim the same CNAME) and would hijack the
+  live apex. Set `domain_name` to the apex (which must already be a Route 53 hosted zone)
+  to attach the cert + apex/www alias records. The `aws.us_east_1` provider alias is
+  simply unused while empty. The `site_url` output reports whichever URL is reachable.
 - **CloudFront + OAC → private S3 site bucket.** Confirmed. Buckets are private,
   OAC-only, public access blocked; bucket policy grants the distribution via OAC.
 - **SPA fallback:** custom error responses for **both 403 and 404** → `/index.html`,

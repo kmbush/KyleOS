@@ -2,7 +2,12 @@
 # Only these four values are account-specific; everything else has a sane default
 # in variables.tf. Placeholders only here — no real account values are committed.
 
-region                  = "us-west-2"
-domain_name             = "<your-domain.com>"
+region = "us-west-2"
+
+# Optional. Leave "" to deploy CloudFront-URL-only (no ACM cert, no DNS) — the right
+# choice if you have no domain, or while an old site still serves the domain. Set it
+# to your apex (which must already be a Route 53 hosted zone) to attach the domain.
+domain_name = ""
+
 contact_sender_email    = "<you@example.com>"
 contact_recipient_email = "<you@example.com>"

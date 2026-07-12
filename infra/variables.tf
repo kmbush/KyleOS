@@ -1,7 +1,7 @@
 # Every input. Account-specific values have NO default — they live only in the
 # gitignored terraform.tfvars (ADR-006). terraform.tfvars.example ships placeholders.
 
-# --- Account-specific: a forker must set these (no defaults) ---
+# --- Account-specific: a forker must set these ---
 
 variable "region" {
   description = "AWS region for the app stack (e.g. us-west-2). ACM stays in us-east-1."
@@ -9,8 +9,9 @@ variable "region" {
 }
 
 variable "domain_name" {
-  description = "Apex domain, also the name of the existing Route 53 hosted zone."
+  description = "Apex domain, also the name of the existing Route 53 hosted zone. Leave empty to deploy CloudFront-URL-only (no ACM cert, no DNS)."
   type        = string
+  default     = ""
 }
 
 variable "contact_sender_email" {
