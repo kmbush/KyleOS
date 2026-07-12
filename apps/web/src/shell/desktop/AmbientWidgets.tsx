@@ -7,8 +7,8 @@ import { useContent } from "../../lib/useContent";
 const CARD = "color-mix(in oklch, var(--bg2) 74%, transparent)";
 
 export function AmbientWidgets() {
-  const { time, date } = useClock();
   const { hero } = useContent();
+  const { time, date } = useClock(hero.timezone);
 
   return (
     <>

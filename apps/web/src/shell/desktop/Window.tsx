@@ -90,7 +90,7 @@ function Light({
         onPress();
       }}
       style={{ background: accent }}
-      className={`grid size-[14px] place-items-center rounded-full font-mono leading-none text-transparent hover:text-black/[0.62] ${textSize}`}
+      className={`grid size-[14px] cursor-pointer place-items-center rounded-full font-mono leading-none text-transparent hover:text-black/[0.62] ${textSize}`}
     >
       {glyph}
     </button>

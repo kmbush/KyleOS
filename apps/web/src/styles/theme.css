@@ -147,6 +147,14 @@
   a:hover {
     text-decoration: underline;
   }
+  /* The pointer cursor is reserved for menu-bar controls and window traffic
+     lights (see .cursor-pointer on those); everything else uses the arrow. */
+  button {
+    cursor: default;
+  }
+  [data-menubar] button {
+    cursor: pointer;
+  }
   ::selection {
     background: var(--moss);
     color: #05080e;

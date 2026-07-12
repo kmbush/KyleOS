@@ -1,20 +1,34 @@
-// The live clock shared by the menu bar and the ambient clock card. Minute
-// precision, re-read every 15s (the spec's tick), so both stay in sync.
+// The live clock shared by the menu bar and the ambient clock card. Formats in
+// the owner's configured time zone so the desktop shows *their* local time (the
+// zone is content, not hardcoded — the repo is public). Re-reads every 15s.
 import { useEffect, useState } from "react";
 
-function readTime(): string {
-  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+function readTime(timeZone?: string): string {
+  try {
+    return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone });
+  } catch {
+    return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
 }
 
-function readDate(): string {
-  return new Date().toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+function readDate(timeZone?: string): string {
+  try {
+    return new Date().toLocaleDateString([], {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone,
+    });
+  } catch {
+    return new Date().toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+  }
 }
 
-export function useClock(): { time: string; date: string } {
-  const [now, setNow] = useState(() => ({ time: readTime(), date: readDate() }));
+export function useClock(timeZone?: string): { time: string; date: string } {
+  const [, tick] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => setNow({ time: readTime(), date: readDate() }), 15_000);
+    const id = setInterval(() => tick((n) => n + 1), 15_000);
     return () => clearInterval(id);
   }, []);
-  return now;
+  return { time: readTime(timeZone), date: readDate(timeZone) };
 }

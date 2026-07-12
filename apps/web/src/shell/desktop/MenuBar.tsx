@@ -22,9 +22,13 @@ interface MenuDef {
   items: MenuItem[];
 }
 
+// Shared hover treatment for the right-cluster icon controls (help, search, socials).
+const ICON_HOVER =
+  "border border-line transition-colors duration-[180ms] hover:border-moss hover:bg-bg3 hover:text-fg";
+
 export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
-  const { time } = useClock();
-  const { contact, projects } = useContent();
+  const { contact, projects, hero } = useContent();
+  const { time } = useClock(hero.timezone);
   const theme = useTheme((s) => s.theme);
   const setTheme = useTheme((s) => s.setTheme);
   const toggleTheme = useTheme((s) => s.toggle);
@@ -99,6 +103,7 @@ export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
   return (
     <div
       ref={barRef}
+      data-menubar
       className="absolute inset-x-0 top-0 z-[700] flex h-9 items-center gap-0.5 border-b border-line px-[14px] text-[13px] backdrop-blur-[16px]"
       style={{ background: "color-mix(in oklch, var(--bg2) 68%, transparent)" }}
     >
@@ -145,7 +150,7 @@ export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
           type="button"
           title="How to use KyleOS"
           onClick={() => openApp(HELP)}
-          className="rounded-[7px] border border-line px-[9px] py-[3px] hover:bg-bg3"
+          className={`rounded-[7px] px-[9px] py-[3px] ${ICON_HOVER}`}
         >
           ?
         </button>
@@ -153,7 +158,7 @@ export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
           type="button"
           title={`Search (${MOD_KEY}K)`}
           onClick={onOpenSpotlight}
-          className="rounded-[7px] border border-line px-[9px] py-0.5 text-sm hover:bg-bg3"
+          className={`rounded-[7px] px-[9px] py-0.5 text-sm ${ICON_HOVER}`}
         >
           ⌕
         </button>
@@ -162,7 +167,7 @@ export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
           target="_blank"
           rel="noopener"
           title="GitHub"
-          className="grid size-7 place-items-center rounded-lg border border-line transition-colors duration-[180ms] hover:border-moss hover:bg-bg3 hover:text-fg"
+          className={`grid size-7 place-items-center rounded-lg ${ICON_HOVER}`}
         >
           <GitHubMark />
         </a>
@@ -171,7 +176,7 @@ export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
           target="_blank"
           rel="noopener"
           title="LinkedIn"
-          className="grid size-7 place-items-center rounded-lg border border-line transition-colors duration-[180ms] hover:border-moss hover:bg-bg3 hover:text-fg"
+          className={`grid size-7 place-items-center rounded-lg ${ICON_HOVER}`}
         >
           <LinkedInMark />
         </a>

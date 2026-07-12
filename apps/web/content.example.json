@@ -3,6 +3,7 @@
     "name": "Kyle Bush",
     "role": "Senior Solutions Architect @ AWS",
     "location": "Seattle, WA",
+    "timezone": "America/Los_Angeles",
     "tagline": "A classically trained software engineer designing resilient, well-architected cloud systems from the Pacific Northwest.",
     "sticky": "Senior Solutions Architect at AWS, classically trained engineer. I design cloud systems that hold up under real load — from the PNW fog."
   },
