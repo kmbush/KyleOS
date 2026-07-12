@@ -73,6 +73,12 @@
   --link: oklch(0.81 0.13 220);
   /* Near-black ink for text on bright accent tiles; constant across themes. */
   --ink: #05080e;
+  /* Boot screen is always dark, regardless of the active theme. */
+  --boot-bg-top: #0d1420;
+  --boot-bg-bottom: #0a0d12;
+  /* Sticky note: amber paper that tracks --amber, with a fixed dark ink. */
+  --sticky-bg: color-mix(in oklch, var(--amber) 90%, #000);
+  --sticky-fg: #1a1204;
 }
 
 [data-theme="light"] {

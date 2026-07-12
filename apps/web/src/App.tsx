@@ -1,15 +1,20 @@
-// Phase 0 placeholder. The desktop and mobile shells replace this in Phase 1;
-// for now it proves the theme tokens and self-hosted fonts render.
+// Root: applies the theme, shows the boot overlay once, then the desktop shell.
+// Phase 2 adds the mobile-shell switch.
+import { useEffect, useState } from "react";
+import { Boot } from "./shell/Boot";
+import { DesktopShell } from "./shell/DesktopShell";
+import { persistTheme, useTheme } from "./stores/useTheme";
 
 export function App() {
+  const theme = useTheme((s) => s.theme);
+  useEffect(() => persistTheme(theme), [theme]);
+
+  const [booting, setBooting] = useState(true);
+
   return (
-    <main className="grid h-screen place-items-center">
-      <div className="grid place-items-center gap-5">
-        <div className="grid size-16 place-items-center rounded-2xl bg-moss font-mono text-[30px] font-bold text-ink">
-          K
-        </div>
-        <p className="font-mono text-xs uppercase tracking-[0.24em] text-fg-dim">booting KyleOS</p>
-      </div>
-    </main>
+    <>
+      <DesktopShell />
+      {booting && <Boot onDone={() => setBooting(false)} />}
+    </>
   );
 }
