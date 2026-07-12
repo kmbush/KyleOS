@@ -11,9 +11,13 @@ if (!container) throw new Error("Root element #root is missing from index.html")
 const root = createRoot(container);
 
 // content.json is served with max-age=60; align staleTime and skip retries so a
-// boot failure surfaces immediately rather than after three attempts.
+// boot failure surfaces immediately rather than after three attempts. No
+// refetch-on-focus: the content cache doubles as the editor's live-edit buffer,
+// so a background refetch must never clobber unsaved edits.
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 60_000, retry: false } },
+  defaultOptions: {
+    queries: { staleTime: 60_000, retry: false, refetchOnWindowFocus: false },
+  },
 });
 
 // Boot gate (ADR-006, DESIGN §9): load runtime config, then prefetch the content

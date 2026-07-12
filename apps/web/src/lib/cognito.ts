@@ -126,8 +126,10 @@ export function completeMfaSetup(code: string): Promise<{ jwt: string }> {
   });
 }
 
-/** Drop any in-flight sign-in. In-memory tokens are cleared by useAuth. */
+/** Sign out: drop any in-flight user and wipe the tokens the library cached into
+ * the in-memory store, so no signed-out session can be resurrected (ADR-003). */
 export function signOut(): void {
-  pendingUser?.signOut();
+  pool().getCurrentUser()?.signOut();
   pendingUser = null;
+  memoryStorage.clear?.();
 }
