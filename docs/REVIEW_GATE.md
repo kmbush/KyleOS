@@ -86,7 +86,7 @@ For every file touched in this phase:
 
 - [ ] Every new production dependency is permissively licensed (MIT / Apache 2.0 / BSD).
 - [ ] **Any copyleft dependency (GPL / AGPL / LGPL) is a BLOCK.** Incompatible with shipping MIT.
-- [ ] Fonts are self-hosted **and their full license texts ship alongside them** — SIL OFL 1.1 for Space Grotesk, Apache 2.0 for JetBrains Mono. Self-hosting means distributing, which triggers attribution. This is the most commonly missed item in the repo.
+- [ ] Fonts are self-hosted **and their full license texts ship alongside them** — SIL OFL 1.1 for both Space Grotesk and JetBrains Mono. Self-hosting means distributing, which triggers attribution. This is the most commonly missed item in the repo.
 - [ ] `NOTICE` is generated from the real dependency tree, not hand-written.
 
 See `docs/LICENSING.md`.

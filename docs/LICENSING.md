@@ -15,7 +15,7 @@ fonts/
     OFL.txt                        # REQUIRED — SIL OFL 1.1
   jetbrains-mono/
     JetBrainsMono-*.woff2
-    LICENSE                        # REQUIRED — Apache 2.0
+    OFL.txt                        # REQUIRED — SIL OFL 1.1
 ```
 
 ---
@@ -37,7 +37,7 @@ Both fonts are **self-hosted** (per DESIGN.md §12 — no Google Fonts CDN, no G
 | Font | License | Requirement |
 |---|---|---|
 | **Space Grotesk** (400/500/600/700) | SIL Open Font License 1.1 | The **full OFL text must ship with the font files.** Copyright notice must be preserved. The fonts may not be sold on their own. |
-| **JetBrains Mono** (400/500/600) | Apache License 2.0 | The **full license text must be included.** Copyright and attribution notices must be preserved. |
+| **JetBrains Mono** (400/500/600) | SIL Open Font License 1.1 | The **full OFL text must ship with the font files.** Copyright notice must be preserved. The fonts may not be sold on their own. |
 
 **Both licenses require shipping the license text. This is not optional and it is not a formality.** It is the single most commonly missed compliance item in projects that self-host fonts, and the whole reason this document exists.
 
@@ -100,7 +100,7 @@ So the README gives an honest blanket acknowledgment of the genre and a clear st
 - [ ] `LICENSE` exists at the repo root, MIT, with the correct year and name
 - [ ] `NOTICE` exists and is **generated from the real dependency tree**, not hand-written
 - [ ] `fonts/space-grotesk/OFL.txt` — **full text**, shipped
-- [ ] `fonts/jetbrains-mono/LICENSE` — **full text**, shipped
+- [ ] `fonts/jetbrains-mono/OFL.txt` — **full text**, shipped
 - [ ] No copyleft (GPL/AGPL/LGPL) anywhere in the production dependency tree
 - [ ] `package.json` declares `"license": "MIT"`
 - [ ] README states the license, links the font licenses, and says the content is not covered

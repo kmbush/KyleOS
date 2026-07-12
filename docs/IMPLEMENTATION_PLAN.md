@@ -152,7 +152,7 @@ Six phases. Each ends in a working, reviewable, mergeable state.
 - [ ] `LICENSE` — **MIT**, correct year and name
 - [ ] `NOTICE` — **generated from the real dependency tree** (`npx license-checker --production`), not hand-written
 - [ ] **`fonts/space-grotesk/OFL.txt`** — full SIL OFL 1.1 text. **Required.** Self-hosting means distributing, which triggers attribution.
-- [ ] **`fonts/jetbrains-mono/LICENSE`** — full Apache 2.0 text. **Required.**
+- [ ] **`fonts/jetbrains-mono/OFL.txt`** — full SIL OFL 1.1 text. **Required.**
 - [ ] No copyleft (GPL/AGPL/LGPL) anywhere in the production dependency tree — **BLOCK** if found
 - [ ] `package.json` declares `"license": "MIT"`
 - [ ] README states the license and notes that **Kyle's content is not covered by it** — fork the OS, not the résumé

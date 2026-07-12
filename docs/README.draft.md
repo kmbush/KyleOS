@@ -84,7 +84,7 @@ Full guide: [`docs/RUNBOOK.md`](docs/RUNBOOK.md).
 | Font | License |
 |---|---|
 | [Space Grotesk](https://github.com/floriankarsten/space-grotesk) | SIL Open Font License 1.1 — [`fonts/space-grotesk/OFL.txt`](fonts/space-grotesk/OFL.txt) |
-| [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) | Apache License 2.0 — [`fonts/jetbrains-mono/LICENSE`](fonts/jetbrains-mono/LICENSE) |
+| [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) | SIL Open Font License 1.1 — [`fonts/jetbrains-mono/OFL.txt`](fonts/jetbrains-mono/OFL.txt) |
 
 Both are self-hosted rather than loaded from a CDN. See [`NOTICE`](NOTICE) for all third-party attributions.
 
