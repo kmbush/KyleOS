@@ -250,6 +250,18 @@ grep -rniE 'AKIA|[0-9]{12}|arn:aws|execute-api|amazonaws\.com|us-[a-z]+-[0-9]' \
 
 ---
 
+### ADR-011 — `qrcode` for in-app authenticator enrollment
+
+**Decision:** the "Set up authenticator" step (ADR-003's in-app MFA_SETUP flow) renders a scannable QR of the `otpauth://` URI, generated **in the browser** with `qrcode` from the client-issued secret.
+
+**Reasoning:** the overwhelmingly common enrollment case is a desktop browser and a phone authenticator. A raw base-32 secret is error-prone to hand-type across devices (it produced a code mismatch in practice), and the `otpauth://` link only works when the browser and authenticator are the *same* device. A QR is the standard, reliable bridge — and rendering it client-side keeps the seed on the owner's device (it is never sent to any agent or server), which is the whole point of in-app enrollment. The manual key + link stay as a fallback.
+
+**Rejected — hand-rolled QR encoder:** QR generation (Reed–Solomon, masking, versioning) is a solved, non-trivial problem; re-implementing it would be more code and more risk than a small, ubiquitous library.
+
+**New dependency:** `qrcode` — frontend, auth flow only. **License: MIT.** (`@types/qrcode` is a devDependency.)
+
+---
+
 ## 6. System architecture
 
 ```mermaid
