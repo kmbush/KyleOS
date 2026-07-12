@@ -1,6 +1,7 @@
-// A project window: name, code/live links, tag pills, a 16:10 screenshot slot,
-// and the description. Screenshots display once the images bucket exists
-// (Phase 3); until then the slot stays empty.
+// A project window: name, code/live links, tag pills, a 16:10 screenshot, and the
+// description. The screenshot renders from its S3 key (uploaded in the editor,
+// ADR-008); with no image the slot stays empty.
+import { imageUrl } from "../lib/api";
 import { useContent } from "../lib/useContent";
 
 export function Work({ projectId }: { projectId: string }) {
@@ -43,7 +44,15 @@ export function Work({ projectId }: { projectId: string }) {
         ))}
       </div>
 
-      <div className="mb-4 aspect-[16/10] w-full overflow-hidden rounded-[12px] border border-line bg-bg3" />
+      <div className="mb-4 aspect-[16/10] w-full overflow-hidden rounded-[12px] border border-line bg-bg3">
+        {project.image && (
+          <img
+            src={imageUrl(project.image)}
+            alt={`${project.name} screenshot`}
+            className="size-full object-cover"
+          />
+        )}
+      </div>
 
       <p className="m-0 text-[15px] leading-[1.7] text-fg-dim">{project.desc}</p>
     </>

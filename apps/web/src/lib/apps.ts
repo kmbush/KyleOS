@@ -72,6 +72,18 @@ export const HELP: AppDef = {
   size: { w: 470, h: 500 },
 };
 
+// The content editor (Phase 4). Hidden — reachable only via #admin, so it is not
+// in the dock, desktop icons, or Spotlight.
+export const EDITOR: AppDef = {
+  id: "editor",
+  windowTitle: "Content Editor",
+  dockLabel: "Editor",
+  searchLabel: "Content Editor",
+  glyph: "✎",
+  accent: "var(--moss)",
+  size: { w: 720, h: 620 },
+};
+
 export const INFO: AppDef = {
   id: "info",
   windowTitle: "About KyleOS",

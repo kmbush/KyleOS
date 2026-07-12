@@ -3,6 +3,7 @@
 import { About } from "./About";
 import { Certs } from "./Certs";
 import { Contact } from "./Contact";
+import { Editor } from "./Editor";
 import { Help } from "./Help";
 import { Info } from "./Info";
 import { Life } from "./Life";
@@ -26,6 +27,8 @@ export function AppContent({ appId }: { appId: string }) {
       return <Help />;
     case "info":
       return <Info />;
+    case "editor":
+      return <Editor />;
     default:
       return null;
   }

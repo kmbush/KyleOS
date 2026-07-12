@@ -9,10 +9,21 @@ export interface AppConfig {
   cognitoClientId: string;
 }
 
+// Cached after the boot fetch so synchronous callers (the API and Cognito seams)
+// can read config without threading a promise through every call site.
+let config: AppConfig | null = null;
+
 export async function loadConfig(): Promise<AppConfig> {
   const response = await fetch("/config.json", { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Could not load /config.json (HTTP ${response.status})`);
   }
-  return (await response.json()) as AppConfig;
+  config = (await response.json()) as AppConfig;
+  return config;
+}
+
+/** The runtime config, available after loadConfig() has resolved at boot. */
+export function getConfig(): AppConfig {
+  if (!config) throw new Error("Config not loaded — loadConfig() must run before getConfig().");
+  return config;
 }
