@@ -24,6 +24,13 @@ test("opens an app in a full-screen sheet and returns via the back chevron", asy
   await expect(page.getByTitle("About")).toBeVisible();
 });
 
+test("opens a project from the grid as a sheet", async ({ page }) => {
+  await page.getByText("Cedar", { exact: true }).click();
+  await expect(page.getByText("Cedar.app")).toBeVisible();
+  await page.getByTitle("Back").click();
+  await expect(page.getByTitle("About")).toBeVisible();
+});
+
 test("Contact shows the social buttons on mobile", async ({ page }) => {
   await page.getByTitle("Contact").click();
   await expect(page.getByTitle("GitHub")).toBeVisible();
