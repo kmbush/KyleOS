@@ -17,6 +17,12 @@ terraform.tfvars
 .terraform/
 .terraform.lock.hcl
 
+# Python artifacts (Lambda handlers + tests)
+__pycache__/
+*.pyc
+.venv/
+build/
+
 # Test artifacts
 coverage/
 playwright-report/

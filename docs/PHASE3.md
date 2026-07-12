@@ -223,9 +223,12 @@ already approved (§9); install it, add a single `QueryClientProvider` at the ro
 ```ts
 // GET the content document from CloudFront (same origin). No auth.
 export async function getContent(): Promise<Content>;
-// PUT /content with the JWT. Wired in Phase 4; the seam lands now.
-export async function putContent(content: Content, token: string): Promise<void>;
 ```
+
+The write path (`putContent` + `useSaveContent`) is **deferred to Phase 4**, where it
+lands together with the editor and the JWT from `useAuth` that gives it a real caller.
+Defining it in Phase 3 would be an unused export with a placeholder token — speculative
+code the review gate blocks (CONVENTIONS §0). Phase 3's frontend change is the read path.
 
 **Contract for the hooks:**
 - `useContent(): Content` — `useQuery({ queryKey: ['content'], queryFn: getContent })`.
@@ -236,12 +239,13 @@ export async function putContent(content: Content, token: string): Promise<void>
   gate. The hook then returns the cached `data`; the query cache is the single source of
   truth for every rendered word. A content-fetch failure at boot shows an error state,
   not the OS.
-- `useSaveContent()` — **contract defined now, wired in Phase 4** (needs auth):
+- `useSaveContent()` — **Phase 4** (needs auth):
   `useMutation({ mutationFn: c => putContent(c, jwt), onMutate: optimistic
   setQueryData(['content']), onError: rollback })`. Optimistic with rollback per §9.
+  It ships with the editor that calls it, not before.
 
-This is the only frontend change in Phase 3. Do not build the editor or auth here —
-that is Phase 4.
+The only frontend change in Phase 3 is the read path (`getContent` + `useContent`). Do
+not build the editor, the write path, or auth here — that is Phase 4.
 
 ---
 

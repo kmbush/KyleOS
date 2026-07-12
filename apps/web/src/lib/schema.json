@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/Content",
+  "definitions": {
+    "Content": {
+      "type": "object",
+      "properties": {
+        "hero": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "timezone": {
+              "type": "string"
+            },
+            "tagline": {
+              "type": "string"
+            },
+            "sticky": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "role",
+            "location",
+            "timezone",
+            "tagline",
+            "sticky"
+          ],
+          "additionalProperties": false
+        },
+        "about": {
+          "type": "object",
+          "properties": {
+            "heading": {
+              "type": "string"
+            },
+            "body": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "text"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "heading",
+            "body",
+            "facts"
+          ],
+          "additionalProperties": false
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "glyph": {
+                "type": "string"
+              },
+              "tagstr": {
+                "type": "string"
+              },
+              "desc": {
+                "type": "string"
+              },
+              "repo": {
+                "type": "string"
+              },
+              "live": {
+                "type": "string"
+              },
+              "image": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "glyph",
+              "tagstr",
+              "desc",
+              "repo",
+              "live"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "publications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "outlet": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "outlet",
+              "date",
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "certs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "issuer": {
+                "type": "string"
+              },
+              "year": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "issuer",
+              "year"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "hobbies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "note"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "note": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "github": {
+              "type": "string"
+            },
+            "linkedin": {
+              "type": "string"
+            },
+            "blog": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "note",
+            "email",
+            "github",
+            "linkedin",
+            "blog"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "hero",
+        "about",
+        "projects",
+        "publications",
+        "certs",
+        "hobbies",
+        "contact"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
