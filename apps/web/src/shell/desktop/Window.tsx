@@ -21,6 +21,7 @@ export function Window({ win }: { win: DesktopWindow }) {
 
   return (
     <div
+      data-window={win.id}
       onMouseDown={() => focus(win.id)}
       style={{
         zIndex: win.z,
