@@ -155,9 +155,12 @@
   [data-menubar] button {
     cursor: pointer;
   }
+  [data-menubar] button:hover {
+    background: var(--bg3);
+  }
   ::selection {
     background: var(--moss);
-    color: #05080e;
+    color: var(--ink);
   }
   ::-webkit-scrollbar {
     width: 9px;
@@ -236,13 +239,5 @@
   }
   to {
     transform: scaleX(1);
-  }
-}
-@keyframes bootFade {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
   }
 }

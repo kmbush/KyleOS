@@ -278,6 +278,7 @@ interface Content {
     name: string;
     role: string;
     location: string;
+    timezone: string;        // IANA name — the desktop clock shows the owner's local time, not the visitor's
     tagline: string;
     sticky: string;          // sticky-note bio, bottom-left
   };
@@ -364,6 +365,7 @@ apps/web/src/
     Boot.tsx
   apps/         About · Work · Writing · Certs · Life · Contact · Help · Info · Editor
   auth/         LoginGate · CredsStep · TotpStep
+  components/   shared presentational atoms used by both shells (e.g. SocialIcons)
   stores/       useTheme · useWindowManager · useAuth
   lib/          config.ts · accents.ts · cognito.ts · api.ts · schema.ts
   styles/       theme.css

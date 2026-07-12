@@ -91,3 +91,26 @@ test("toggles the theme from the View menu", async ({ page }) => {
   await page.getByText("Light theme").click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
+
+test("Spotlight closes on Escape", async ({ page }) => {
+  const input = page.getByPlaceholder("Search apps, projects, sections…");
+  await page.keyboard.press("Control+k");
+  await expect(input).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(input).toBeHidden();
+});
+
+test("maximizes a window to fill the viewport and restores", async ({ page }) => {
+  await page.getByText("About", { exact: true }).click();
+  const win = windowEl(page, "about");
+  const before = await box(win);
+
+  await win.getByTitle("maximize").click();
+  const maxed = await box(win);
+  const viewport = page.viewportSize();
+  if (viewport) expect(maxed.width).toBeGreaterThan(viewport.width - 40);
+
+  await win.getByTitle("maximize").click();
+  const restored = await box(win);
+  expect(Math.round(restored.width)).toBe(Math.round(before.width));
+});

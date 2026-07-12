@@ -112,7 +112,7 @@ export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
           <button
             type="button"
             onClick={() => setActive((a) => (a === menu.key ? null : menu.key))}
-            className={`rounded-[7px] px-[11px] py-1.5 hover:bg-bg3 ${menu.bold ? "font-bold" : ""} ${active === menu.key ? "bg-bg3" : ""}`}
+            className={`rounded-[7px] px-[11px] py-1.5 ${menu.bold ? "font-bold" : ""} ${active === menu.key ? "bg-bg3" : ""}`}
           >
             {menu.label}
           </button>
@@ -132,7 +132,7 @@ export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
                     setActive(null);
                     item.onSelect();
                   }}
-                  className="flex w-full items-center justify-between gap-[14px] rounded-[7px] px-[11px] py-2 text-left text-[13px] hover:bg-bg3"
+                  className="flex w-full items-center justify-between gap-[14px] rounded-[7px] px-[11px] py-2 text-left text-[13px]"
                 >
                   {item.label}
                   {item.hint && (
@@ -181,7 +181,7 @@ export function MenuBar({ onOpenSpotlight }: { onOpenSpotlight: () => void }) {
           <LinkedInMark />
         </a>
         <span>●●●○</span>
-        <button type="button" onClick={toggleTheme} className="text-[13px]">
+        <button type="button" onClick={toggleTheme} className="rounded-[7px] px-1.5 text-[13px]">
           {theme === "dark" ? "☽" : "☀"}
         </button>
         <span className="text-fg">{time}</span>

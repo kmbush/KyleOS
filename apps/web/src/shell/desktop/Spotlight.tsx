@@ -50,10 +50,10 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
         run: toggleTheme,
       },
       {
-        label: "Help",
+        label: HELP.searchLabel,
         kind: "guide",
-        glyph: "?",
-        tint: "var(--moss)",
+        glyph: HELP.glyph,
+        tint: HELP.accent,
         run: () => open(HELP.id, HELP.windowTitle, HELP.size),
       },
     ];

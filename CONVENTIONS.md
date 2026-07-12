@@ -35,6 +35,7 @@ apps/web/src/
     Boot.tsx
   apps/         About · Work · Writing · Certs · Life · Contact · Help · Info · Editor
   auth/         LoginGate · CredsStep · TotpStep
+  components/   shared presentational atoms used by both shells (e.g. SocialIcons)
   stores/       useTheme · useWindowManager · useAuth
   lib/          config.ts · accents.ts · cognito.ts · api.ts · schema.ts
   styles/       theme.css
