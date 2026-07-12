@@ -49,6 +49,16 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run test -- --run
 
+      # ADR-009 proof #4: the generated schema accepts the content seed (Python side).
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Python schema proof
+        working-directory: services/api
+        run: |
+          pip install fastjsonschema
+          python test_schema.py
+
       - run: npm run build
 
       - name: E2E

@@ -10,6 +10,7 @@ import os
 
 import boto3
 import fastjsonschema
+from botocore.exceptions import ClientError
 
 SITE_BUCKET = os.environ["SITE_BUCKET"]
 CONTENT_KEY = os.environ["CONTENT_KEY"]
@@ -50,11 +51,20 @@ def handler(event, context):
         ContentType="application/json",
         CacheControl=CACHE_CONTROL,
     )
-    cloudfront.create_invalidation(
-        DistributionId=DISTRIBUTION_ID,
-        InvalidationBatch={
-            "Paths": {"Quantity": 1, "Items": [f"/{CONTENT_KEY}"]},
-            "CallerReference": context.aws_request_id,
-        },
-    )
-    return _response(200, {"ok": True})
+
+    # The write above is the save; the edit is now live. Invalidation only makes it
+    # appear within seconds instead of within the 60s cache TTL, so a failed
+    # invalidation must not report the save itself as failed.
+    invalidated = True
+    try:
+        cloudfront.create_invalidation(
+            DistributionId=DISTRIBUTION_ID,
+            InvalidationBatch={
+                "Paths": {"Quantity": 1, "Items": [f"/{CONTENT_KEY}"]},
+                "CallerReference": context.aws_request_id,
+            },
+        )
+    except ClientError:
+        invalidated = False
+
+    return _response(200, {"ok": True, "invalidated": invalidated})

@@ -112,6 +112,9 @@ resource "aws_s3_object" "content_seed" {
   content_type  = "application/json"
   cache_control = var.content_cache_control
 
+  # Seed only after versioning is on, so the first version is captured as history.
+  depends_on = [aws_s3_bucket_versioning.site]
+
   lifecycle {
     ignore_changes = all
   }

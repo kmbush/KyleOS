@@ -15,7 +15,8 @@ terraform.tfvars
 *.tfstate
 *.tfstate.*
 .terraform/
-.terraform.lock.hcl
+# .terraform.lock.hcl IS committed — it pins provider versions + checksums for
+# reproducible, supply-chain-safe applies (multi-platform). It holds no secrets.
 
 # Python artifacts (Lambda handlers + tests)
 __pycache__/

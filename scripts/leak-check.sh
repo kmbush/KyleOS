@@ -17,8 +17,9 @@ set -euo pipefail
 # The bare region term (us-[a-z]+-[0-9]) is dropped: regions are public, shared facts
 # — the ACM provider alias must literally name us-east-1 (CloudFront mandates it), and
 # account-specific leaks are still caught by AKIA / 12-digit account IDs / arn:aws /
-# execute-api / amazonaws.com.
-pattern='AKIA|[0-9]{12}|arn:aws|execute-api|amazonaws\.com'
+# execute-api / amazonaws.com. The account-ID term is word-bounded so a real, standalone
+# id matches but the incidental digit runs inside dependency-lock checksum hashes do not.
+pattern='AKIA|\b[0-9]{12}\b|arn:aws|execute-api|amazonaws\.com'
 
 matches=$(
   git ls-files --cached --others --exclude-standard |

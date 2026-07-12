@@ -6,6 +6,7 @@ API Gateway throttling (infra), not here. Uses boto3 from the Lambda runtime."""
 
 import json
 import os
+import re
 
 import boto3
 
@@ -13,6 +14,9 @@ SENDER = os.environ["SES_SENDER"]
 RECIPIENT = os.environ["SES_RECIPIENT"]
 # The hidden form field a real user never sees; any value means a bot filled it.
 HONEYPOT_FIELD = os.environ.get("HONEYPOT_FIELD", "company")
+# A coarse sanity check, not RFC-perfect — enough to reject obvious garbage before
+# it reaches SES (which would otherwise 500 on an invalid Reply-To).
+EMAIL_RE = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
 ses = boto3.client("ses")
 
@@ -40,6 +44,8 @@ def handler(event, context):
     message = str(form.get("message", "")).strip()
     if not (name and email and message):
         return _response(400, {"error": "name, email, and message are required."})
+    if not EMAIL_RE.fullmatch(email):
+        return _response(400, {"error": "A valid email is required."})
 
     ses.send_email(
         Source=SENDER,
