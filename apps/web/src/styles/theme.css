@@ -160,6 +160,36 @@
     border: 3px solid transparent;
     background-clip: content-box;
   }
+  input,
+  textarea,
+  select {
+    font-family: var(--font-display);
+  }
+}
+
+/* Text inputs and textareas, shared by the contact form, editor, and login. */
+@layer components {
+  .field {
+    width: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 11px;
+    font-size: 13px;
+    outline: none;
+  }
+  .field:focus {
+    border-color: var(--moss);
+  }
+  .field::placeholder {
+    color: var(--fg-faint);
+  }
+  textarea.field {
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.5;
+  }
 }
 
 /* Global animations, timings verbatim from the spec (DESIGN §5 / REVIEW_GATE §3). */

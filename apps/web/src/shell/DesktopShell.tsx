@@ -1,9 +1,13 @@
-// The desktop shell: wallpaper dot-grid, ambient widgets, and (added in later
-// chunks) the menu bar, desktop icons, windows, dock, and Spotlight.
+// The desktop shell: wallpaper dot-grid, ambient widgets, and open windows.
+// The menu bar, desktop icons, dock, and Spotlight land in the next chunk.
+import { useWindowManager } from "../stores/useWindowManager";
 import { AmbientWidgets } from "./desktop/AmbientWidgets";
 import { Watermark } from "./desktop/Watermark";
+import { Window } from "./desktop/Window";
 
 export function DesktopShell() {
+  const windows = useWindowManager((s) => s.windows);
+
   return (
     <div className="relative h-screen select-none overflow-hidden">
       <div
@@ -16,6 +20,11 @@ export function DesktopShell() {
       />
       <Watermark />
       <AmbientWidgets />
+      {windows
+        .filter((w) => !w.minimized)
+        .map((w) => (
+          <Window key={w.id} win={w} />
+        ))}
     </div>
   );
 }

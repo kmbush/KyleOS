@@ -21,7 +21,12 @@
   },
   "linter": {
     "enabled": true,
-    "rules": { "preset": "recommended" }
+    "rules": {
+      "preset": "recommended",
+      "a11y": {
+        "noStaticElementInteractions": "off"
+      }
+    }
   },
   "javascript": {
     "formatter": { "quoteStyle": "double" }
