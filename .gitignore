@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+apps/web/dist/
+
+# Runtime config and content — never committed (ADR-002, ADR-006)
+config.json
+content.json
+
+# Environment values — never committed (ADR-006)
+.env*
+terraform.tfvars
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+
+# Editor / OS
+.DS_Store
+*.local

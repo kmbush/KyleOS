@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <title>KyleOS — Kyle Bush</title>
+    <meta
+      name="description"
+      content="Kyle Bush's portfolio, built as a small operating system: a windowed desktop, a springboard on mobile, and an editor behind both."
+    />
+
+    <!--
+      The SPA renders an empty root behind a boot screen, so crawlers and social
+      unfurlers rely on these static tags (ADR-001). Absolute og:url / og:image
+      values are finalized at launch once the domain is known (DESIGN §13).
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="KyleOS — Kyle Bush" />
+    <meta
+      property="og:description"
+      content="A portfolio, reimagined as a tiny operating system."
+    />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="KyleOS — Kyle Bush" />
+    <meta
+      name="twitter:description"
+      content="A portfolio, reimagined as a tiny operating system."
+    />
+    <meta name="twitter:image" content="/og.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Kyle Bush",
+        "jobTitle": "Cloud Architect"
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p>
+        KyleOS is an interactive desktop environment and needs JavaScript to run.
+        Reach Kyle on GitHub or LinkedIn — the links are in the site once it loads.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

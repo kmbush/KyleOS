@@ -1,0 +1,204 @@
+/* KyleOS theme: self-hosted fonts, both palettes, and the tokens Tailwind builds on.
+   Palette values are verbatim from the design spec (reference/HANDOFF.md). Never
+   hardcode a color in a component — reference these variables. */
+
+@import "tailwindcss";
+
+/* Self-hosted fonts — no Google Fonts CDN (DESIGN §12). License texts ship in
+   each font's directory (docs/LICENSING.md). */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/space-grotesk/space-grotesk-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/space-grotesk/space-grotesk-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/space-grotesk/space-grotesk-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/space-grotesk/space-grotesk-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono/jetbrains-mono-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono/jetbrains-mono-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono/jetbrains-mono-600.woff2") format("woff2");
+}
+
+/* Dark is the default theme (DESIGN §12). */
+:root,
+[data-theme="dark"] {
+  --bg: #0a0d12;
+  --bg2: #101620;
+  --bg3: #18202c;
+  --line: rgba(210, 222, 240, 0.12);
+  --fg: #eef2f7;
+  --fg-dim: rgba(238, 242, 247, 0.62);
+  --fg-faint: rgba(238, 242, 247, 0.4);
+  --moss: oklch(0.82 0.16 150);
+  --glacier: oklch(0.81 0.13 220);
+  --berry: oklch(0.72 0.19 330);
+  --amber: oklch(0.83 0.14 78);
+  --link: oklch(0.81 0.13 220);
+  /* Near-black ink for text on bright accent tiles; constant across themes. */
+  --ink: #05080e;
+}
+
+[data-theme="light"] {
+  --bg: #eef2f7;
+  --bg2: #ffffff;
+  --bg3: #eef1f6;
+  --line: rgba(12, 18, 28, 0.12);
+  --fg: #0f141b;
+  --fg-dim: rgba(15, 20, 27, 0.64);
+  --fg-faint: rgba(15, 20, 27, 0.42);
+  --moss: oklch(0.55 0.16 150);
+  --glacier: oklch(0.52 0.14 224);
+  --berry: oklch(0.52 0.2 330);
+  --amber: oklch(0.6 0.14 70);
+  --link: oklch(0.52 0.14 224);
+}
+
+/* Expose the tokens to Tailwind so utilities (bg-bg2, text-fg-dim, font-mono …)
+   resolve through the variables and swap with the active theme. */
+@theme inline {
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg2);
+  --color-bg3: var(--bg3);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-fg-dim: var(--fg-dim);
+  --color-fg-faint: var(--fg-faint);
+  --color-moss: var(--moss);
+  --color-glacier: var(--glacier);
+  --color-berry: var(--berry);
+  --color-amber: var(--amber);
+  --color-link: var(--link);
+  --color-ink: var(--ink);
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    font-family: var(--font-display);
+    color: var(--fg);
+    background:
+      radial-gradient(
+        ellipse at 70% -10%,
+        color-mix(in oklch, var(--glacier) 20%, transparent),
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse at 12% 108%,
+        color-mix(in oklch, var(--moss) 15%, transparent),
+        transparent 50%
+      ),
+      linear-gradient(180deg, var(--bg3), var(--bg));
+  }
+  a {
+    color: var(--link);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  ::selection {
+    background: var(--moss);
+    color: #05080e;
+  }
+  ::-webkit-scrollbar {
+    width: 9px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 20px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+}
+
+/* Global animations, timings verbatim from the spec (DESIGN §5 / REVIEW_GATE §3). */
+@keyframes winIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes bootBar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes bootFade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "region": "<aws-region>",
+  "apiBaseUrl": "https://<api-id>.execute-api.<region>.amazonaws.com",
+  "cognitoUserPoolId": "<region>_<id>",
+  "cognitoClientId": "<client-id>"
+}

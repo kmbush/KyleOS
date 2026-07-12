@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body { font-family: 'Space Grotesk', system-ui, sans-serif; }
+  ::selection { background: var(--moss); color: #05080e; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ::-webkit-scrollbar { width: 9px; }
+  ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 20px; border: 3px solid transparent; background-clip: content-box; }
+  @keyframes winIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  @keyframes bootBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes bootFade { from { opacity: 1; } to { opacity: 0; } }
+  input, textarea, select { font-family: 'Space Grotesk', system-ui, sans-serif; }
+  [data-edit] input, [data-edit] textarea { width: 100%; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; font-size: 13px; outline: none; }
+  [data-edit] textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+  [data-edit] input:focus, [data-edit] textarea:focus { border-color: var(--moss); }
+  [data-edit] input::placeholder, [data-edit] textarea::placeholder { color: var(--fg-faint); }
+  a { cursor: pointer; }
+  [data-menu] button { cursor: pointer !important; }
+  [data-menu] button:hover { background: var(--bg3) !important; }
+  [data-social] { transition: background .18s ease, border-color .18s ease, color .18s ease; }
+  [data-social]:hover { background: var(--bg3); border-color: var(--moss) !important; color: var(--fg) !important; }
+  [data-traffic] span { color: transparent !important; cursor: pointer; transition: color .15s ease, background .15s ease; }
+  [data-traffic] span:hover { color: rgba(0,0,0,0.62) !important; }
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" onMouseDown="{{ deskDown }}" style="--bg:#0a0d12; --bg2:#101620; --bg3:#18202c; --line:rgba(210,222,240,0.12); --fg:#eef2f7; --fg-dim:rgba(238,242,247,0.62); --fg-faint:rgba(238,242,247,0.40); --moss:oklch(0.82 0.16 150); --glacier:oklch(0.81 0.13 220); --berry:oklch(0.72 0.19 330); --amber:oklch(0.83 0.14 78); --link:oklch(0.81 0.13 220); position:relative; height:100vh; overflow:hidden; background:radial-gradient(ellipse at 70% -10%, color-mix(in oklch, var(--glacier) 20%, transparent), transparent 55%), radial-gradient(ellipse at 12% 108%, color-mix(in oklch, var(--moss) 15%, transparent), transparent 50%), linear-gradient(180deg, var(--bg3), var(--bg)); color:var(--fg); font-family:'Space Grotesk',sans-serif; user-select:none;">
+
+  <div style="position:absolute; inset:0; z-index:0; pointer-events:none; background-image:radial-gradient(var(--line) 1px, transparent 1px); background-size:30px 30px; opacity:.45;"></div>
+
+  <sc-if value="{{ booting }}" hint-placeholder-val="{{ true }}">
+  <div style="position:absolute; inset:0; z-index:2000; background:linear-gradient(180deg,#0d1420,#0a0d12); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;">
+    <div style="width:64px; height:64px; border-radius:16px; background:var(--moss); display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:30px; box-shadow:0 0 55px -6px var(--moss);">K</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.24em; text-transform:uppercase; color:var(--fg-dim);">booting KyleOS</div>
+    <div style="width:180px; height:3px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="height:100%; width:100%; background:var(--moss); transform-origin:left; animation:bootBar 1.4s cubic-bezier(.4,0,.2,1) both;"></div></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ spotlight }}" hint-placeholder-val="{{ false }}">
+  <div onMouseDown="{{ closeSpot }}" style="position:absolute; inset:0; z-index:1500; background:rgba(5,8,14,0.55); backdrop-filter:blur(7px); display:flex; justify-content:center; padding-top:13vh;">
+    <div onMouseDown="{{ stop }}" style="width:min(560px,92vw); align-self:flex-start; background:var(--bg2); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 40px 90px -34px rgba(0,0,0,0.85); animation:winIn .18s ease;">
+      <div style="display:flex; align-items:center; gap:12px; padding:15px 18px; border-bottom:1px solid var(--line);">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--moss);">⌘K</span>
+        <input value="{{ spotQuery }}" onInput="{{ spotInput }}" onKeyDown="{{ spotKey }}" autoFocus spellcheck="false" autoComplete="off" placeholder="Search apps, projects, sections…" style="flex:1; background:transparent; border:none; outline:none; color:var(--fg); font-family:'Space Grotesk',sans-serif; font-size:16px;">
+      </div>
+      <div style="max-height:328px; overflow-y:auto; padding:8px;">
+        <sc-for list="{{ spotItems }}" as="it" hint-placeholder-count="5">
+          <button onClick="{{ it.run }}" onMouseEnter="{{ it.hover }}" style="display:flex; align-items:center; justify-content:space-between; gap:14px; width:100%; text-align:left; background:{{ it.bg }}; border:none; color:var(--fg); cursor:default; font-family:'Space Grotesk',sans-serif; font-size:14px; padding:11px 13px; border-radius:9px;">
+            <span style="display:flex; align-items:center; gap:11px;"><span style="width:26px; height:26px; border-radius:7px; background:{{ it.tint }}; display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-size:13px;">{{ it.glyph }}</span>{{ it.label }}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-faint);">{{ it.kind }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+  <!-- WATERMARK -->
+  <div style="position:absolute; right:2vw; bottom:4vh; z-index:0; pointer-events:none; text-align:right; line-height:0.82;">
+    <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(90px,17vw,300px); letter-spacing:-0.04em; color:color-mix(in oklch, var(--fg) 5%, transparent);">KB</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:clamp(11px,1.2vw,14px); letter-spacing:.3em; text-transform:uppercase; color:color-mix(in oklch, var(--fg) 12%, transparent); margin-top:6px;">Pacific Northwest</div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+  <!-- AMBIENT WIDGETS -->
+  <div style="position:absolute; right:26px; top:60px; z-index:1; width:260px; display:flex; flex-direction:column; gap:14px;">
+    <div style="border:1px solid var(--line); border-radius:15px; padding:18px 20px; background:color-mix(in oklch, var(--bg2) 74%, transparent); backdrop-filter:blur(12px);">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:clamp(30px,3vw,42px); font-weight:500; letter-spacing:-0.02em;">{{ clock }}</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dim); margin-top:4px;">{{ dateStr }} &#183; Seattle, WA</div>
+    </div>
+    <div style="border:1px solid var(--line); border-radius:15px; padding:16px 18px; background:color-mix(in oklch, var(--bg2) 74%, transparent); backdrop-filter:blur(12px);">
+      <div style="display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dim); margin-bottom:12px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--moss); animation:pulse 2.4s ease-in-out infinite;"></span>status</div>
+      <p style="font-size:14px; line-height:1.5; margin:0; color:var(--fg);">Available for interesting cloud problems.</p>
+      <p style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-faint); margin:11px 0 0;">focus: Well-Architected reviews</p>
+    </div>
+  </div>
+
+  <!-- STICKY BIO -->
+  <div style="position:absolute; left:clamp(20px,4vw,54px); bottom:96px; z-index:1; width:288px; transform:rotate(-1.4deg); background:color-mix(in oklch, var(--amber) 90%, #000); color:#1a1204; border-radius:6px; padding:20px 22px; box-shadow:0 22px 45px -22px rgba(0,0,0,0.7);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; opacity:.6; margin-bottom:9px;">// hey, i'm</div>
+    <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:26px; letter-spacing:-0.02em; line-height:1;">{{ hero.name }}</div>
+    <p style="font-size:13.5px; line-height:1.55; margin:11px 0 0; font-weight:500;">{{ hero.sticky }}</p>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ loginOpen }}" hint-placeholder-val="{{ false }}">
+  <div onMouseDown="{{ cancelLogin }}" style="position:absolute; inset:0; z-index:1600; background:rgba(5,8,14,0.6); backdrop-filter:blur(7px); display:grid; place-items:center;">
+    <div onMouseDown="{{ stop }}" style="width:min(400px,92vw); background:var(--bg2); border:1px solid var(--line); border-radius:16px; padding:32px 30px; box-shadow:0 40px 90px -34px rgba(0,0,0,0.85); animation:winIn .2s ease;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:22px;"><span style="width:32px; height:32px; border:1px solid var(--moss); border-radius:9px; display:grid; place-items:center; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--moss);">KB</span><span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--fg-faint);">owner access</span></div>
+      <sc-if value="{{ isCreds }}" hint-placeholder-val="{{ true }}">
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:24px; margin:0 0 6px;">Sign in to edit</h2>
+        <p style="font-size:13px; color:var(--fg-dim); margin:0 0 22px;">You'll confirm with two-factor next.</p>
+        <form onSubmit="{{ submitCreds }}" data-edit style="display:grid; gap:12px;">
+          <input type="email" required placeholder="you@example.com" defaultValue="kyle@example.com" autoComplete="off">
+          <input type="password" required placeholder="Password" autoComplete="off">
+          <button type="submit" style="margin-top:4px; background:var(--moss); color:#05080e; border:none; border-radius:9px; padding:12px; cursor:default; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;">Continue</button>
+          <button type="button" onClick="{{ cancelLogin }}" style="background:transparent; border:none; color:var(--fg-faint); cursor:default; font-family:'JetBrains Mono',monospace; font-size:12px;">cancel</button>
+        </form>
+      </sc-if>
+      <sc-if value="{{ isCode }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:24px; margin:0 0 6px;">Two-factor</h2>
+        <p style="font-size:13px; color:var(--fg-dim); margin:0 0 20px;">Enter the 6-digit code from your authenticator.</p>
+        <form onSubmit="{{ verifyCode }}" data-edit>
+          <div onInput="{{ codeInput }}" onKeyDown="{{ codeKey }}" style="display:flex; gap:8px; margin-bottom:18px;">
+            <input data-otp inputmode="numeric" maxlength="1" style="text-align:center; font-size:20px; font-family:'JetBrains Mono',monospace;">
+            <input data-otp inputmode="numeric" maxlength="1" style="text-align:center; font-size:20px; font-family:'JetBrains Mono',monospace;">
+            <input data-otp inputmode="numeric" maxlength="1" style="text-align:center; font-size:20px; font-family:'JetBrains Mono',monospace;">
+            <input data-otp inputmode="numeric" maxlength="1" style="text-align:center; font-size:20px; font-family:'JetBrains Mono',monospace;">
+            <input data-otp inputmode="numeric" maxlength="1" style="text-align:center; font-size:20px; font-family:'JetBrains Mono',monospace;">
+            <input data-otp inputmode="numeric" maxlength="1" style="text-align:center; font-size:20px; font-family:'JetBrains Mono',monospace;">
+          </div>
+          <button type="submit" style="width:100%; background:var(--moss); color:#05080e; border:none; border-radius:9px; padding:12px; cursor:default; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;">Verify &amp; enter</button>
+          <button type="button" onClick="{{ backToCreds }}" style="width:100%; margin-top:10px; background:transparent; border:none; color:var(--fg-faint); cursor:default; font-family:'JetBrains Mono',monospace; font-size:12px;">back</button>
+        </form>
+      </sc-if>
+      <p style="margin:20px 0 0; padding-top:16px; border-top:1px solid var(--line); font-size:11px; line-height:1.5; color:var(--fg-faint);">Prototype gate &#8212; any credentials proceed. Production enforcement runs server-side via AWS Cognito &amp; TOTP MFA.</p>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+  <!-- MENU BAR -->
+  <div data-menu style="position:absolute; top:0; left:0; right:0; z-index:700; height:36px; display:flex; align-items:center; gap:2px; padding:0 14px; background:color-mix(in oklch, var(--bg2) 68%, transparent); backdrop-filter:blur(16px); border-bottom:1px solid var(--line); font-size:13px;">
+    <sc-for list="{{ menus }}" as="m" hint-placeholder-count="4">
+      <div style="position:relative;">
+        <button onClick="{{ m.toggle }}" style="display:flex; align-items:center; gap:8px; background:{{ m.bg }}; border:none; color:var(--fg); cursor:default; font-family:{{ m.font }}; font-weight:{{ m.weight }}; font-size:13px; padding:6px 11px; border-radius:7px;">{{ m.label }}</button>
+        <sc-if value="{{ m.open }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; top:36px; left:0; min-width:210px; background:var(--bg2); border:1px solid var(--line); border-radius:11px; padding:6px; box-shadow:0 24px 60px -24px rgba(0,0,0,0.8); animation:menuIn .16s ease; z-index:800;">
+            <sc-for list="{{ m.items }}" as="it" hint-placeholder-count="3">
+              <button onClick="{{ it.run }}" style="display:flex; align-items:center; justify-content:space-between; gap:14px; width:100%; text-align:left; background:transparent; border:none; color:{{ it.color }}; cursor:default; font-family:'Space Grotesk',sans-serif; font-size:13px; padding:8px 11px; border-radius:7px;" style-hover="background:var(--bg3);">{{ it.label }}<span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-faint);">{{ it.hint }}</span></button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+    <span style="margin-left:auto; display:flex; align-items:center; gap:16px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dim);">
+      <button onClick="{{ openHelp }}" title="How to use KyleOS" style="background:transparent; border:1px solid var(--line); color:var(--fg-dim); cursor:default; font-family:'JetBrains Mono',monospace; font-size:12px; border-radius:7px; padding:3px 9px;">?</button>
+      <button onClick="{{ openSpotlight }}" title="Search ({{ modKey }}K)" style="background:transparent; border:1px solid var(--line); color:var(--fg-dim); font-family:'JetBrains Mono',monospace; font-size:14px; border-radius:7px; padding:2px 9px;">&#8981;</button>
+      <a href="{{ contact.github }}" target="_blank" rel="noopener" data-social title="GitHub" style="width:28px; height:28px; border-radius:8px; border:1px solid var(--line); display:grid; place-items:center; color:var(--fg-dim);"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.04-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.22.7.83.58C20.56 22.29 24 17.8 24 12.5 24 5.87 18.63.5 12 .5z"></path></svg></a>
+      <a href="{{ contact.linkedin }}" target="_blank" rel="noopener" data-social title="LinkedIn" style="width:28px; height:28px; border-radius:8px; border:1px solid var(--line); display:grid; place-items:center; color:var(--fg-dim);"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"></path></svg></a>
+      <span>&#9679;&#9679;&#9679;&#9675;</span>
+      <button onClick="{{ toggleTheme }}" style="background:transparent; border:none; color:var(--fg-dim); cursor:default; font-family:'JetBrains Mono',monospace; font-size:13px;">{{ themeIcon }}</button>
+      <span style="color:var(--fg);">{{ clock }}</span>
+    </span>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+  <!-- DESKTOP PROJECT ICONS -->
+  <sc-for list="{{ icons }}" as="ic" hint-placeholder-count="5">
+    <button key="{{ ic.id }}" onMouseDown="{{ ic.down }}" onDoubleClick="{{ ic.open }}" data-desktop-icon style="{{ ic.frame }}">
+      <span style="width:60px; height:60px; border-radius:14px; background:var(--bg2); border:1px solid var(--line); display:grid; place-items:center; position:relative; overflow:hidden; box-shadow:0 10px 24px -14px rgba(0,0,0,0.7);">
+        <span style="position:absolute; top:0; left:0; width:100%; height:5px; background:{{ ic.accent }};"></span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:22px; color:{{ ic.accent }};">{{ ic.glyph }}</span>
+      </span>
+      <span style="max-width:96px; font-size:11.5px; font-family:'JetBrains Mono',monospace; color:var(--fg); text-align:center; line-height:1.25; padding:2px 5px; border-radius:5px; background:color-mix(in oklch, var(--bg) 40%, transparent);">{{ ic.label }}</span>
+    </button>
+  </sc-for>
+  </sc-if>
+
+  <!-- WINDOWS -->
+  <sc-for list="{{ windows }}" as="win" hint-placeholder-count="0">
+    <div key="{{ win.key }}" style="{{ win.frame }}" onMouseDown="{{ win.focus }}">
+      <sc-if value="{{ win.desktopChrome }}" hint-placeholder-val="{{ true }}">
+      <div onMouseDown="{{ win.dragStart }}" style="flex:none; display:flex; align-items:center; gap:8px; padding:11px 14px; border-bottom:1px solid var(--line); cursor:default; background:var(--bg2); border-radius:13px 13px 0 0;">
+        <div data-traffic style="display:flex; gap:8px; align-items:center;">
+        <span onMouseDown="{{ win.close }}" data-stop title="close" style="width:14px; height:14px; border-radius:50%; background:var(--berry); display:grid; place-items:center; font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1;">&times;</span>
+        <span onMouseDown="{{ win.minimize }}" data-stop title="minimize" style="width:14px; height:14px; border-radius:50%; background:var(--amber); display:grid; place-items:center; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1;">&minus;</span>
+        <span onMouseDown="{{ win.maximize }}" data-stop title="maximize" style="width:14px; height:14px; border-radius:50%; background:var(--moss); display:grid; place-items:center; font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1;">+</span>
+        </div>
+        <span style="margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dim);">{{ win.title }}</span>
+      </div>
+      </sc-if>
+      <sc-if value="{{ win.mobileChrome }}" hint-placeholder-val="{{ false }}"><div style="flex:none; display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); background:var(--bg2);"><button onMouseDown="{{ win.close }}" data-stop style="background:transparent; border:none; color:var(--moss); font-size:26px; line-height:1; cursor:default; padding:0;">&#8249;</button><span style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--fg);">{{ win.title }}</span></div></sc-if>
+      <sc-if value="{{ win.showBody }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:1; overflow-y:auto; padding:clamp(18px,2.4vw,30px);">
+
+        <sc-if value="{{ win.isProject }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:baseline; justify-content:space-between; margin-bottom:14px;">
+            <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(22px,3vw,30px); letter-spacing:-0.02em; margin:0;">{{ win.proj.name }}</h1>
+            <span style="display:flex; gap:14px; font-family:'JetBrains Mono',monospace; font-size:12px;">
+              <sc-if value="{{ win.proj.repo }}" hint-placeholder-val="{{ true }}"><a href="{{ win.proj.repo }}" target="_blank" rel="noopener" data-stop>code &#8599;</a></sc-if>
+              <sc-if value="{{ win.proj.live }}" hint-placeholder-val="{{ false }}"><a href="{{ win.proj.live }}" target="_blank" rel="noopener" data-stop style="color:var(--moss);">live &#8599;</a></sc-if>
+            </span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px;">
+            <sc-for list="{{ win.proj.tags }}" as="tg" hint-placeholder-count="3"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-dim); border:1px solid var(--line); border-radius:6px; padding:3px 9px;">{{ tg.text }}</span></sc-for>
+          </div>
+          <div style="position:relative; width:100%; aspect-ratio:16/10; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--bg3); margin-bottom:16px;">
+            <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="{{ win.shotId }}" shape="rect" fit="cover" placeholder="drop a screenshot" hint-size="100%,100%"></x-import>
+          </div>
+          <p style="font-size:15px; line-height:1.7; color:var(--fg-dim); margin:0;">{{ win.proj.desc }}</p>
+        </sc-if>
+
+        <sc-if value="{{ win.isAbout }}" hint-placeholder-val="{{ false }}">
+          <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:24px; letter-spacing:-0.01em; margin:0 0 16px;">{{ about.heading }}</h2>
+          <sc-for list="{{ about.body }}" as="p" hint-placeholder-count="2"><p style="font-size:14px; line-height:1.7; color:var(--fg-dim); margin:0 0 14px;">{{ p.text }}</p></sc-for>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;">
+            <sc-for list="{{ facts }}" as="f" hint-placeholder-count="4"><div style="border:1px solid var(--line); border-radius:10px; padding:13px;"><p style="font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--fg-faint); margin:0 0 5px;">{{ f.label }}</p><p style="font-size:14px; margin:0;">{{ f.value }}</p></div></sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ win.isWriting }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ publications }}" as="pb" hint-placeholder-count="3"><a href="{{ pb.url }}" target="_blank" rel="noopener" data-stop style="display:block; border:1px solid var(--line); border-radius:11px; padding:15px; margin-bottom:10px; color:var(--fg);"><div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:11px; margin-bottom:8px;"><span style="color:{{ pb.accent }};">{{ pb.outlet }}</span><span style="color:var(--fg-faint);">{{ pb.date }}</span></div><div style="font-size:15px; font-weight:500; line-height:1.35;">{{ pb.title }}</div></a></sc-for>
+        </sc-if>
+
+        <sc-if value="{{ win.isCerts }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:11px;">
+            <sc-for list="{{ certs }}" as="ct" hint-placeholder-count="4"><div style="border:1px solid var(--line); border-radius:11px; padding:15px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><span style="width:28px; height:28px; border-radius:7px; display:grid; place-items:center; color:{{ ct.accent }}; border:1px solid {{ ct.accent }}; font-family:'JetBrains Mono',monospace; font-size:12px;">&#10003;</span><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-faint);">{{ ct.year }}</span></div><h3 style="font-size:14px; font-weight:600; margin:0 0 4px; line-height:1.3;">{{ ct.name }}</h3><p style="font-size:12px; color:var(--fg-dim); margin:0;">{{ ct.issuer }}</p></div></sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ win.isLife }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:11px;">
+            <sc-for list="{{ hobbies }}" as="h" hint-placeholder-count="4"><div style="border:1px solid var(--line); border-radius:11px; padding:16px;"><span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:{{ h.accent }}; margin-bottom:11px;"></span><h3 style="font-size:16px; font-weight:600; margin:0 0 7px;">{{ h.name }}</h3><p style="font-size:13px; line-height:1.55; color:var(--fg-dim); margin:0;">{{ h.note }}</p></div></sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ win.isContact }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ contactSent }}" hint-placeholder-val="{{ false }}"><div style="text-align:center; padding:26px 6px;">
+            <div style="width:52px; height:52px; margin:0 auto 16px; border-radius:14px; background:var(--moss); display:grid; place-items:center; color:#05080e; font-size:24px;">&#10003;</div>
+            <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:22px; margin:0 0 8px;">Message ready to send</h2>
+            <p style="font-size:14px; line-height:1.6; color:var(--fg-dim); margin:0 auto 20px; max-width:36ch;">This form isn't connected to a backend in the prototype &#8212; wire it up when the app ships.</p>
+            <button type="button" onClick="{{ contactReset }}" style="background:transparent; border:1px solid var(--line); color:var(--fg); border-radius:9px; padding:10px 18px; cursor:default; font-family:'Space Grotesk',sans-serif; font-size:13px;">Compose another</button>
+          </div></sc-if>
+          <sc-if value="{{ contactUnsent }}" hint-placeholder-val="{{ true }}">
+            <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(22px,3vw,30px); letter-spacing:-0.02em; margin:0 0 6px;">{{ contact.note }}</h2>
+            <p style="font-size:13.5px; color:var(--fg-dim); margin:0 0 18px;">Drop me a line &#8212; I'll get back to you.</p>
+            <form onSubmit="{{ sendContact }}" data-edit style="display:grid; gap:10px;">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="text" required placeholder="Your name"><input type="email" required placeholder="Your email"></div>
+              <input type="text" placeholder="Subject">
+              <textarea required placeholder="Your message" style="min-height:120px;"></textarea>
+              <button type="submit" style="background:var(--moss); color:#05080e; border:none; border-radius:9px; padding:12px; cursor:default; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;">Send message</button>
+            </form>
+            <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}"><div style="display:flex; gap:12px; margin-top:20px;"><a href="{{ contact.github }}" target="_blank" rel="noopener" data-social title="GitHub" style="width:44px; height:44px; border-radius:12px; border:1px solid var(--line); display:grid; place-items:center; color:var(--fg-dim);"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.04-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.22.7.83.58C20.56 22.29 24 17.8 24 12.5 24 5.87 18.63.5 12 .5z"></path></svg></a><a href="{{ contact.linkedin }}" target="_blank" rel="noopener" data-social title="LinkedIn" style="width:44px; height:44px; border-radius:12px; border:1px solid var(--line); display:grid; place-items:center; color:var(--fg-dim);"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"></path></svg></a></div></sc-if>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ win.isInfo }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center; padding:8px 0 4px;">
+            <div style="width:56px; height:56px; margin:0 auto 16px; border-radius:14px; background:var(--moss); display:grid; place-items:center; color:#05080e; font-weight:700; font-size:24px; font-family:'JetBrains Mono',monospace;">K</div>
+            <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:22px; margin:0 0 4px;">KyleOS</h2>
+            <p style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-faint); margin:0 0 18px;">version 1.0 &#183; {{ hero.location }}</p>
+            <p style="font-size:14px; line-height:1.6; color:var(--fg-dim); margin:0 auto; max-width:38ch;">A portfolio disguised as a desktop. Open the project files, poke around the dock, drag things. Everything you'd want to know about {{ hero.name }} is in here somewhere.</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ win.isEditor }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:148px minmax(0,1fr); gap:18px;">
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <sc-for list="{{ editNav }}" as="es" hint-placeholder-count="7"><button type="button" onClick="{{ es.sel }}" style="display:flex; gap:8px; align-items:center; text-align:left; background:{{ es.bg }}; color:{{ es.fg }}; border:none; border-radius:8px; padding:9px 10px; cursor:default; font-family:'Space Grotesk',sans-serif; font-size:13px;"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; opacity:.6;">{{ es.num }}</span>{{ es.label }}</button></sc-for>
+              <button type="button" onClick="{{ resetContent }}" style="margin-top:12px; background:transparent; border:1px solid var(--line); color:var(--fg-faint); border-radius:8px; padding:8px; cursor:default; font-family:'JetBrains Mono',monospace; font-size:10px;">reset all</button>
+            </div>
+            <form onInput="{{ onAdminInput }}" onClick="{{ onAdminClick }}" data-edit>
+              <p style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--moss); margin:0 0 16px;">&#9679; changes autosave &amp; appear live</p>
+              <sc-if value="{{ edProfile }}" hint-placeholder-val="{{ true }}"><div style="display:grid; gap:12px;">
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Name</span><input type="text" data-path="hero.name" defaultValue="{{ hero.name }}"></label>
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Role</span><input type="text" data-path="hero.role" defaultValue="{{ hero.role }}"></label>
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Location</span><input type="text" data-path="hero.location" defaultValue="{{ hero.location }}"></label>
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Tagline (README window)</span><textarea data-path="hero.tagline" defaultValue="{{ hero.tagline }}"></textarea></label>
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Sticky-note bio</span><textarea data-path="hero.sticky" defaultValue="{{ hero.sticky }}"></textarea></label>
+              </div></sc-if>
+              <sc-if value="{{ edAbout }}" hint-placeholder-val="{{ false }}"><div style="display:grid; gap:14px;">
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Heading</span><textarea data-path="about.heading" defaultValue="{{ about.heading }}"></textarea></label>
+                <div><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--fg-faint);">Paragraphs</span><button type="button" data-action="add" data-list="about.body" style="background:var(--moss); color:#05080e; border:none; border-radius:7px; padding:6px 11px; cursor:default; font-size:12px; font-weight:600;">+ add</button></div>
+                  <sc-for list="{{ about.body }}" as="para" hint-placeholder-count="2"><div key="{{ para.id }}" style="display:flex; gap:8px; margin-bottom:8px;"><textarea data-path="about.body.{{ $index }}.text" defaultValue="{{ para.text }}"></textarea><button type="button" data-action="remove" data-list="about.body" data-index="{{ $index }}" style="flex:none; width:34px; background:transparent; border:1px solid var(--line); color:var(--fg-faint); border-radius:8px; cursor:default;">&times;</button></div></sc-for></div>
+                <div><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--fg-faint);">Facts</span><button type="button" data-action="add" data-list="about.facts" style="background:var(--moss); color:#05080e; border:none; border-radius:7px; padding:6px 11px; cursor:default; font-size:12px; font-weight:600;">+ add</button></div>
+                  <sc-for list="{{ about.facts }}" as="fact" hint-placeholder-count="4"><div key="{{ fact.id }}" style="display:grid; grid-template-columns:1fr 1.3fr auto; gap:8px; margin-bottom:8px;"><input type="text" placeholder="label" data-path="about.facts.{{ $index }}.label" defaultValue="{{ fact.label }}"><input type="text" placeholder="value" data-path="about.facts.{{ $index }}.value" defaultValue="{{ fact.value }}"><button type="button" data-action="remove" data-list="about.facts" data-index="{{ $index }}" style="width:34px; background:transparent; border:1px solid var(--line); color:var(--fg-faint); border-radius:8px; cursor:default;">&times;</button></div></sc-for></div>
+              </div></sc-if>
+              <sc-if value="{{ edWork }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--fg-faint);">Projects &#183; open as desktop files</span><button type="button" data-action="add" data-list="projects" style="background:var(--moss); color:#05080e; border:none; border-radius:7px; padding:6px 12px; cursor:default; font-size:12px; font-weight:600;">+ add</button></div>
+                <sc-for list="{{ editProjects }}" as="pr" hint-placeholder-count="5"><div key="{{ pr.id }}" style="border:1px solid var(--line); border-radius:11px; padding:14px; margin-bottom:12px; display:grid; gap:9px;">
+                  <div style="display:flex; gap:8px;"><input type="text" placeholder="Name" data-path="projects.{{ $index }}.name" defaultValue="{{ pr.name }}" style="font-weight:600;"><button type="button" data-action="remove" data-list="projects" data-index="{{ $index }}" style="flex:none; width:34px; background:transparent; border:1px solid var(--line); color:var(--fg-faint); border-radius:8px; cursor:default;">&times;</button></div>
+                  <div style="display:grid; grid-template-columns:70px 1fr; gap:8px;"><input type="text" placeholder="icon" data-path="projects.{{ $index }}.glyph" defaultValue="{{ pr.glyph }}" style="text-align:center;"><input type="text" placeholder="Tags (dot-separated)" data-path="projects.{{ $index }}.tagstr" defaultValue="{{ pr.tagstr }}"></div>
+                  <textarea placeholder="Description" data-path="projects.{{ $index }}.desc" defaultValue="{{ pr.desc }}"></textarea>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"><input type="url" placeholder="Repo URL" data-path="projects.{{ $index }}.repo" defaultValue="{{ pr.repo }}"><input type="url" placeholder="Live URL" data-path="projects.{{ $index }}.live" defaultValue="{{ pr.live }}"></div>
+                </div></sc-for>
+              </sc-if>
+              <sc-if value="{{ edWriting }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--fg-faint);">Publications</span><button type="button" data-action="add" data-list="publications" style="background:var(--moss); color:#05080e; border:none; border-radius:7px; padding:6px 12px; cursor:default; font-size:12px; font-weight:600;">+ add</button></div>
+                <sc-for list="{{ publications }}" as="pb" hint-placeholder-count="3"><div key="{{ pb.id }}" style="border:1px solid var(--line); border-radius:11px; padding:14px; margin-bottom:12px; display:grid; gap:9px;">
+                  <div style="display:flex; gap:8px;"><input type="text" placeholder="Title" data-path="publications.{{ $index }}.title" defaultValue="{{ pb.title }}" style="font-weight:600;"><button type="button" data-action="remove" data-list="publications" data-index="{{ $index }}" style="flex:none; width:34px; background:transparent; border:1px solid var(--line); color:var(--fg-faint); border-radius:8px; cursor:default;">&times;</button></div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"><input type="text" placeholder="Outlet" data-path="publications.{{ $index }}.outlet" defaultValue="{{ pb.outlet }}"><input type="text" placeholder="Date" data-path="publications.{{ $index }}.date" defaultValue="{{ pb.date }}"></div>
+                  <input type="url" placeholder="URL" data-path="publications.{{ $index }}.url" defaultValue="{{ pb.url }}">
+                </div></sc-for>
+              </sc-if>
+              <sc-if value="{{ edCerts }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--fg-faint);">Certifications</span><button type="button" data-action="add" data-list="certs" style="background:var(--moss); color:#05080e; border:none; border-radius:7px; padding:6px 12px; cursor:default; font-size:12px; font-weight:600;">+ add</button></div>
+                <sc-for list="{{ certs }}" as="ct" hint-placeholder-count="4"><div key="{{ ct.id }}" style="border:1px solid var(--line); border-radius:11px; padding:14px; margin-bottom:12px; display:grid; gap:9px;">
+                  <div style="display:flex; gap:8px;"><input type="text" placeholder="Name" data-path="certs.{{ $index }}.name" defaultValue="{{ ct.name }}" style="font-weight:600;"><button type="button" data-action="remove" data-list="certs" data-index="{{ $index }}" style="flex:none; width:34px; background:transparent; border:1px solid var(--line); color:var(--fg-faint); border-radius:8px; cursor:default;">&times;</button></div>
+                  <div style="display:grid; grid-template-columns:1.4fr .6fr; gap:8px;"><input type="text" placeholder="Issuer" data-path="certs.{{ $index }}.issuer" defaultValue="{{ ct.issuer }}"><input type="text" placeholder="Year" data-path="certs.{{ $index }}.year" defaultValue="{{ ct.year }}"></div>
+                </div></sc-for>
+              </sc-if>
+              <sc-if value="{{ edLife }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--fg-faint);">Hobbies</span><button type="button" data-action="add" data-list="hobbies" style="background:var(--moss); color:#05080e; border:none; border-radius:7px; padding:6px 12px; cursor:default; font-size:12px; font-weight:600;">+ add</button></div>
+                <sc-for list="{{ hobbies }}" as="hb" hint-placeholder-count="4"><div key="{{ hb.id }}" style="border:1px solid var(--line); border-radius:11px; padding:14px; margin-bottom:12px; display:grid; gap:9px;">
+                  <div style="display:flex; gap:8px;"><input type="text" placeholder="Name" data-path="hobbies.{{ $index }}.name" defaultValue="{{ hb.name }}" style="font-weight:600;"><button type="button" data-action="remove" data-list="hobbies" data-index="{{ $index }}" style="flex:none; width:34px; background:transparent; border:1px solid var(--line); color:var(--fg-faint); border-radius:8px; cursor:default;">&times;</button></div>
+                  <textarea placeholder="Note" data-path="hobbies.{{ $index }}.note" defaultValue="{{ hb.note }}"></textarea>
+                </div></sc-for>
+              </sc-if>
+              <sc-if value="{{ edContact }}" hint-placeholder-val="{{ false }}"><div style="display:grid; gap:12px;">
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Closing line</span><textarea data-path="contact.note" defaultValue="{{ contact.note }}"></textarea></label>
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Reply-to email (for your backend)</span><input type="email" data-path="contact.email" defaultValue="{{ contact.email }}"></label>
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">GitHub URL</span><input type="url" data-path="contact.github" defaultValue="{{ contact.github }}"></label>
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">LinkedIn URL</span><input type="url" data-path="contact.linkedin" defaultValue="{{ contact.linkedin }}"></label>
+                <label style="display:grid; gap:5px;"><span style="font-size:12px; color:var(--fg-dim);">Blog URL</span><input type="url" data-path="contact.blog" defaultValue="{{ contact.blog }}"></label>
+              </div></sc-if>
+            </form>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ win.isHelp }}" hint-placeholder-val="{{ false }}">
+          <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:22px; margin:0 0 6px;">Welcome to KyleOS</h2>
+          <p style="font-size:14px; line-height:1.6; color:var(--fg-dim); margin:0 0 18px;">A portfolio that behaves like a desktop. Here's the map:</p>
+          <div style="display:grid; gap:11px;">
+            <div style="display:flex; gap:12px; align-items:flex-start;"><span style="flex:none; width:30px; height:30px; border-radius:8px; background:var(--moss); display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-size:14px;">&#9634;</span><p style="font-size:13.5px; line-height:1.5; margin:0;"><strong>Dock</strong> (bottom) &#8212; open About, Writing, Certs, Life, and Contact.</p></div>
+            <div style="display:flex; gap:12px; align-items:flex-start;"><span style="flex:none; width:30px; height:30px; border-radius:8px; background:var(--glacier); display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-size:14px;">&#8942;</span><p style="font-size:13.5px; line-height:1.5; margin:0;"><strong>Project files</strong> (top-left) &#8212; double-click to open, drag to rearrange.</p></div>
+            <div style="display:flex; gap:12px; align-items:flex-start;"><span style="flex:none; width:30px; height:30px; border-radius:8px; background:var(--berry); display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-size:13px;">&#9679;</span><p style="font-size:13.5px; line-height:1.5; margin:0;"><strong>Windows</strong> &#8212; drag by the title bar. Red closes, amber minimizes to the dock, green maximizes.</p></div>
+            <div style="display:flex; gap:12px; align-items:flex-start;"><span style="flex:none; width:30px; height:30px; border-radius:8px; background:var(--amber); display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-size:12px;">&#8984;K</span><p style="font-size:13.5px; line-height:1.5; margin:0;"><strong>Spotlight</strong> &#8212; press {{ modKey }}K (or the search button) to search &amp; jump anywhere.</p></div>
+            <div style="display:flex; gap:12px; align-items:flex-start;"><span style="flex:none; width:30px; height:30px; border-radius:8px; background:var(--moss); display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-size:15px;">&#8801;</span><p style="font-size:13.5px; line-height:1.5; margin:0;"><strong>Menu bar</strong> &#8212; File, View, and Go for quick actions; the &#9670; menu toggles light / dark.</p></div>
+          </div>
+          <p style="margin:18px 0 0; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-faint);">tip: the &#9670; menu toggles light / dark.</p>
+        </sc-if>
+
+      </div>
+      </sc-if>
+    </div>
+  </sc-for>
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+  <!-- DOCK -->
+  <div style="position:absolute; bottom:16px; left:50%; transform:translateX(-50%); z-index:650; display:flex; align-items:flex-end; gap:6px; padding:9px 12px; background:color-mix(in oklch, var(--bg2) 70%, transparent); backdrop-filter:blur(18px); border:1px solid var(--line); border-radius:20px; box-shadow:0 20px 50px -20px rgba(0,0,0,0.6);">
+    <sc-for list="{{ dock }}" as="app" hint-placeholder-count="6">
+      <button onClick="{{ app.open }}" data-cursor style="display:flex; flex-direction:column; align-items:center; gap:5px; background:transparent; border:none; cursor:default; padding:2px 4px; transition:transform .18s ease;" style-hover="transform:translateY(-7px);">
+        <span style="width:48px; height:48px; border-radius:13px; background:{{ app.tint }}; display:grid; place-items:center; font-family:'JetBrains Mono',monospace; font-size:20px; color:#05080e;">{{ app.glyph }}</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.02em; color:var(--fg-dim);">{{ app.label }}</span>
+        <span style="width:4px; height:4px; border-radius:50%; background:{{ app.dot }}; margin-top:-2px;"></span>
+      </button>
+    </sc-for>
+    <sc-if value="{{ hasMinimized }}" hint-placeholder-val="{{ false }}"><span style="width:1px; height:40px; background:var(--line); margin:0 4px; align-self:center;"></span></sc-if>
+    <sc-for list="{{ minimizedWins }}" as="mw" hint-placeholder-count="0">
+      <button onClick="{{ mw.restore }}" data-cursor title="{{ mw.title }}" style="display:flex; flex-direction:column; align-items:center; gap:5px; background:transparent; border:none; cursor:default; padding:2px 4px; transition:transform .18s ease;" style-hover="transform:translateY(-7px);">
+        <span style="width:48px; height:48px; border-radius:13px; background:var(--bg3); border:1px solid var(--line); display:grid; place-items:center; font-family:'JetBrains Mono',monospace; font-size:16px; color:var(--fg-dim);">&#9633;</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--fg-dim); max-width:56px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ mw.title }}</span>
+        <span style="width:4px; height:4px; border-radius:50%; background:var(--amber); margin-top:-2px;"></span>
+      </button>
+    </sc-for>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed; top:0; left:0; right:0; z-index:400; height:40px; display:flex; align-items:center; justify-content:space-between; padding:0 18px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg);">
+    <span style="font-weight:500;">{{ clock }}</span>
+    <span style="display:flex; align-items:center; gap:11px; color:var(--fg-dim);"><button onClick="{{ toggleTheme }}" style="background:transparent; border:none; color:var(--fg-dim); cursor:default; font-family:inherit; font-size:13px;">{{ themeIcon }}</button><span>&#9679;&#9679;&#9679;&#9675;</span><span>&#9636;</span></span>
+  </div>
+  <sc-if value="{{ mobileHome }}" hint-placeholder-val="{{ true }}">
+  <div style="position:absolute; inset:40px 0 0; z-index:1; display:flex; flex-direction:column;">
+    <div style="position:absolute; right:18px; bottom:150px; z-index:0; pointer-events:none; text-align:right; line-height:0.82;"><div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:150px; letter-spacing:-0.04em; color:color-mix(in oklch, var(--fg) 6%, transparent);">KB</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:color-mix(in oklch, var(--fg) 12%, transparent); margin-top:4px;">Pacific NW</div></div>
+    <div style="position:relative; z-index:1; flex:1; overflow-y:auto; padding:32px 24px 12px; align-content:start;">
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:28px 10px;">
+        <sc-for list="{{ mobileGrid }}" as="ap" hint-placeholder-count="8">
+          <button onClick="{{ ap.open }}" style="display:flex; flex-direction:column; align-items:center; gap:7px; background:transparent; border:none; cursor:default; padding:0;">
+            <span style="width:60px; height:60px; border-radius:16px; background:{{ ap.tint }}; display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-size:25px; box-shadow:0 10px 22px -10px rgba(0,0,0,0.5);">{{ ap.glyph }}</span>
+            <span style="font-size:11px; color:var(--fg); text-align:center; line-height:1.2; max-width:76px; text-shadow:0 1px 4px rgba(0,0,0,0.45);">{{ ap.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="flex:none; padding:8px 14px 20px;">
+      <div style="display:flex; justify-content:space-around; align-items:center; padding:12px 10px; background:color-mix(in oklch, var(--bg2) 58%, transparent); backdrop-filter:blur(22px); border:1px solid var(--line); border-radius:30px;">
+        <sc-for list="{{ mobileDock }}" as="ap" hint-placeholder-count="4">
+          <button onClick="{{ ap.open }}" title="{{ ap.label }}" style="background:transparent; border:none; cursor:default; padding:0;">
+            <span style="width:56px; height:56px; border-radius:15px; background:{{ ap.tint }}; display:grid; place-items:center; color:#05080e; font-family:'JetBrains Mono',monospace; font-size:24px; box-shadow:0 8px 18px -8px rgba(0,0,0,0.5);">{{ ap.glyph }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.rootRef = React.createRef();
+    this.z = 10;
+    this.drag = null;
+    this.mod = (/Mac|iPhone|iPad|iPod/.test((navigator.platform || '') + ' ' + (navigator.userAgent || ''))) ? '\u2318' : 'Ctrl';
+    const saved = this.load();
+    const content = this.merge(this.defaults(), saved.content);
+    const iconPos = {};
+    content.projects.forEach((p, i) => { iconPos[p.id] = { x: 28 + i * 112, y: 52 }; });
+    this.state = { theme: saved.theme || 'dark', clock: this.now(), dateStr: this.today(), menu: null, iconPos, windows: [], booting: true, spotlight: false, spotQuery: '', spotIndex: 0, content, authed: false, login: null, loginStep: 'creds', editSection: 'profile', contactSent: false, mobile: (typeof window !== 'undefined' && window.matchMedia) ? window.matchMedia('(max-width: 820px)').matches : false };
+  }
+
+  now() { try { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
+  today() { try { return new Date().toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }); } catch (e) { return ''; } }
+  uid() { return 'x' + Math.random().toString(36).slice(2, 9); }
+  load() { try { return JSON.parse(localStorage.getItem('kb_kyleos_v1') || '{}'); } catch (e) { return {}; } }
+  persist() { try { localStorage.setItem('kb_kyleos_v1', JSON.stringify({ theme: this.state.theme, content: this.state.content })); } catch (e) {} }
+  merge(def, saved) { if (!saved) return def; try { return Object.assign({}, def, saved); } catch (e) { return def; } }
+  setByPath(obj, path, value) { const parts = path.split('.'); let cur = obj; for (let i = 0; i < parts.length - 1; i++) { const k = /^\d+$/.test(parts[i]) ? parseInt(parts[i], 10) : parts[i]; cur = cur[k]; if (cur == null) return; } const last = parts[parts.length - 1]; cur[/^\d+$/.test(last) ? parseInt(last, 10) : last] = value; }
+  getByPath(obj, path) { return path.split('.').reduce((o, k) => (o == null ? o : o[/^\d+$/.test(k) ? parseInt(k, 10) : k]), obj); }
+  newItem(list) { const id = this.uid(); switch (list) { case 'about.body': return { id, text: '' }; case 'about.facts': return { id, label: '', value: '' }; case 'projects': return { id, name: 'New project', glyph: '\u25A0', tagstr: '', desc: '', repo: '', live: '' }; case 'publications': return { id, title: '', outlet: '', date: '', url: '' }; case 'certs': return { id, name: '', issuer: '', year: '' }; case 'hobbies': return { id, name: '', note: '' }; default: return { id }; } }
+  openEditor() { if (this.state.authed) this.openApp('editor', 'editor', 'Content Editor', { w: 760, h: 620 }); else this.setState({ login: 'open', loginStep: 'creds', menu: null }); }
+
+  defaults() {
+    return {
+      hero: { name: 'Kyle Bush', role: 'Senior Solutions Architect @ AWS', location: 'Seattle, WA',
+        tagline: 'A classically trained software engineer designing resilient, well-architected cloud systems from the Pacific Northwest.',
+        sticky: 'Senior Solutions Architect at AWS, classically trained engineer. I design cloud systems that hold up under real load \u2014 from the PNW fog.' },
+      about: { heading: 'I turn ambiguous problems into systems that hold up under load.', body: [
+        { id: 'a1', text: 'Senior Solutions Architect at AWS and a classically trained software engineer. I help teams design cloud systems that are secure, cost-aware, and boringly reliable \u2014 and I still read the source.' },
+        { id: 'a2', text: 'That classical foundation \u2014 data structures, distributed systems, the discipline of maintainable code \u2014 is the lens I bring to every architecture conversation.' },
+      ], facts: [
+        { id: 'f1', label: 'Based in', value: 'Seattle, WA' }, { id: 'f2', label: 'Focus', value: 'Cloud architecture' },
+        { id: 'f3', label: 'Languages', value: 'Go, Python, TS' }, { id: 'f4', label: 'Currently', value: 'WA reviews' },
+      ] },
+      projects: [
+        { id: 'p1', name: 'Cedar', glyph: '\u2318', tagstr: 'Go \u00b7 CDK \u00b7 Policy-as-Code', blurb: '', repo: 'https://github.com/', live: '',
+          desc: 'A policy engine that lints CloudFormation & CDK against the Well-Architected pillars before anything deploys. Cedar turns tribal architecture knowledge into automated guardrails so teams catch cost, security, and reliability foot-guns in CI instead of in production.' },
+        { id: 'p2', name: 'Fogline', glyph: '\u25D2', tagstr: 'TypeScript \u00b7 Lambda \u00b7 DynamoDB', blurb: '', repo: 'https://github.com/', live: 'https://example.com',
+          desc: 'A serverless status-page generator with edge caching and zero cold-start on the read path. Built to stay up when everything else is down \u2014 the read path never touches a cold Lambda.' },
+        { id: 'p3', name: 'driftwood', glyph: '\u2248', tagstr: 'Rust \u00b7 WASM', blurb: '', repo: 'https://github.com/', live: '',
+          desc: 'A tiny CRDT library for offline-first apps, compiled to WASM and under 12kb gzipped. Conflict-free sync without dragging in a megabyte of dependencies.' },
+        { id: 'p4', name: 'Trailhead CLI', glyph: '\u2338', tagstr: 'Python \u00b7 Click', blurb: '', repo: 'https://github.com/', live: '',
+          desc: 'A developer CLI that scaffolds a production-ready AWS account baseline \u2014 org structure, guardrails, logging, and identity \u2014 in one command.' },
+        { id: 'p5', name: 'KyleOS', glyph: '\u25A0', tagstr: 'Design \u00b7 Frontend', blurb: '', repo: 'https://github.com/', live: '',
+          desc: 'The desktop you are using right now. A portfolio reimagined as a tiny operating system, with draggable windows, a live dock, and a working menu bar.' },
+      ],
+      publications: [
+        { id: 'w1', title: 'Designing for the failure you did not plan for', outlet: 'blog', date: '2026', url: 'https://example.com' },
+        { id: 'w2', title: 'The cost of the abstraction you never questioned', outlet: 'Medium', date: '2025', url: 'https://example.com' },
+        { id: 'w3', title: 'A field guide to Well-Architected reviews', outlet: 'AWS Builders', date: '2025', url: 'https://example.com' },
+      ],
+      certs: [
+        { id: 'c1', name: 'Solutions Architect \u2013 Pro', issuer: 'AWS', year: '2025' }, { id: 'c2', name: 'DevOps Engineer \u2013 Pro', issuer: 'AWS', year: '2024' },
+        { id: 'c3', name: 'Security \u2013 Specialty', issuer: 'AWS', year: '2024' }, { id: 'c4', name: 'Kubernetes Admin', issuer: 'CNCF', year: '2023' },
+      ],
+      hobbies: [
+        { id: 'h1', name: 'Backpacking', note: 'Alpine lakes and Cascade ridgelines.' }, { id: 'h2', name: 'Film photography', note: '35mm, mostly fog and cedar.' },
+        { id: 'h3', name: 'Coffee', note: 'Pour-over pedantry.' }, { id: 'h4', name: 'Woodworking', note: 'Things I can touch.' },
+      ],
+      contact: { note: 'Let\u2019s build something that lasts.', email: 'kyle@example.com', github: 'https://github.com/', linkedin: 'https://linkedin.com/', blog: 'https://example.com' },
+    };
+  }
+
+  themeVars(t) {
+    if (t === 'light') return { '--bg': '#eef2f7', '--bg2': '#ffffff', '--bg3': '#eef1f6', '--line': 'rgba(12,18,28,0.12)', '--fg': '#0f141b', '--fg-dim': 'rgba(15,20,27,0.64)', '--fg-faint': 'rgba(15,20,27,0.42)', '--moss': 'oklch(0.55 0.16 150)', '--glacier': 'oklch(0.52 0.14 224)', '--berry': 'oklch(0.52 0.2 330)', '--amber': 'oklch(0.6 0.14 70)', '--link': 'oklch(0.52 0.14 224)' };
+    return { '--bg': '#0a0d12', '--bg2': '#101620', '--bg3': '#18202c', '--line': 'rgba(210,222,240,0.12)', '--fg': '#eef2f7', '--fg-dim': 'rgba(238,242,247,0.62)', '--fg-faint': 'rgba(238,242,247,0.40)', '--moss': 'oklch(0.82 0.16 150)', '--glacier': 'oklch(0.81 0.13 220)', '--berry': 'oklch(0.72 0.19 330)', '--amber': 'oklch(0.83 0.14 78)', '--link': 'oklch(0.81 0.13 220)' };
+  }
+  applyTheme(t) { const el = this.rootRef.current; if (!el) return; const v = this.themeVars(t); Object.keys(v).forEach(k => el.style.setProperty(k, v[k])); }
+  setTheme(theme) { this.setState({ theme }, () => { this.applyTheme(theme); this.persist(); }); }
+
+  componentDidMount() {
+    this.applyTheme(this.state.theme);
+    this._ci = setInterval(() => this.setState({ clock: this.now() }), 15000);
+    this._mm = (e) => {
+      if (!this.drag) return;
+      if (this.drag.kind === 'win') {
+        this.setState(s => ({ windows: s.windows.map(w => w.id === this.drag.id ? { ...w, x: e.clientX - this.drag.dx, y: Math.max(40, e.clientY - this.drag.dy) } : w) }));
+      } else {
+        const id = this.drag.id;
+        this.setState(s => ({ iconPos: { ...s.iconPos, [id]: { x: e.clientX - this.drag.dx, y: Math.max(42, e.clientY - this.drag.dy) } } }));
+      }
+    };
+    this._mu = () => { this.drag = null; document.body.style.cursor = ''; };
+    document.addEventListener('mousemove', this._mm);
+    document.addEventListener('mouseup', this._mu);
+    this._hash = () => { const h = (location.hash || '').toLowerCase().replace('#/', '#'); if (h === '#admin') this.openEditor(); };
+    window.addEventListener('hashchange', this._hash);
+    this._boot = setTimeout(() => { this.setState({ booting: false }); if ((location.hash || '').toLowerCase().replace('#/', '#') === '#admin') this.openEditor(); else if (!this.state.mobile) this.openApp('help', 'help', 'Help', { w: 470, h: 500 }); }, 1500);
+    this._kd = (e) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); this.setState(s => ({ spotlight: !s.spotlight, spotQuery: '', spotIndex: 0 })); }
+      else if (e.key === 'Escape') { this.setState({ spotlight: false, menu: null }); }
+    };
+    document.addEventListener('keydown', this._kd);
+    this._rz = () => { const m = !!(window.matchMedia && window.matchMedia('(max-width: 820px)').matches); if (m !== this.state.mobile) this.setState({ mobile: m }); };
+    window.addEventListener('resize', this._rz);
+  }
+  componentWillUnmount() { clearInterval(this._ci); clearTimeout(this._boot); document.removeEventListener('mousemove', this._mm); document.removeEventListener('mouseup', this._mu); document.removeEventListener('keydown', this._kd); window.removeEventListener('hashchange', this._hash); window.removeEventListener('resize', this._rz); }
+  componentDidUpdate(pp, ps) { if (ps.theme !== this.state.theme) { this.applyTheme(this.state.theme); this.persist(); } }
+
+  focusWin(id) { this.z += 1; const z = this.z; this.setState(s => ({ windows: s.windows.map(w => w.id === id ? { ...w, z } : w) })); }
+
+  openApp(id, app, title, size) {
+    if (this.state.mobile) { this.z += 1; const mz = this.z; this.setState({ windows: [{ id, app, title, x: 0, y: 0, w: 0, h: 0, z: mz }], menu: null, spotlight: false }); return; }
+    this.z += 1; const z = this.z;
+    this.setState(s => {
+      const found = s.windows.find(w => w.id === id);
+      if (found) return { windows: s.windows.map(w => w.id === id ? { ...w, z } : w), menu: null };
+      const W = (typeof window !== 'undefined') ? window.innerWidth : 1200;
+      const idx = s.windows.length;
+      const width = (size && size.w) || 560, height = (size && size.h) || 440;
+      const x = Math.min(Math.max(150, W * 0.5 - width * 0.5 + idx * 26), Math.max(150, W - width - 40));
+      return { windows: [...s.windows, { id, app, title, x, y: 84 + idx * 24, w: width, h: height, z }], menu: null };
+    });
+  }
+  closeWin(id) { this.setState(s => ({ windows: s.windows.filter(w => w.id !== id) })); }
+
+  spotDefs() {
+    const P = ['var(--moss)', 'var(--glacier)', 'var(--berry)', 'var(--amber)'];
+    const secs = [
+      { label: 'About', kind: 'section', glyph: '\u2302', tint: 'var(--moss)', act: () => this.openApp('about', 'about', 'About', { w: 520, h: 460 }) },
+      { label: 'Writing', kind: 'section', glyph: '\u270E', tint: 'var(--glacier)', act: () => this.openApp('writing', 'writing', 'Writing', { w: 520, h: 440 }) },
+      { label: 'Certifications', kind: 'section', glyph: '\u2713', tint: 'var(--amber)', act: () => this.openApp('certs', 'certs', 'Certs', { w: 520, h: 420 }) },
+      { label: 'Life', kind: 'section', glyph: '\u26F0', tint: 'var(--berry)', act: () => this.openApp('life', 'life', 'Life', { w: 500, h: 400 }) },
+      { label: 'Contact', kind: 'section', glyph: '\u2709', tint: 'var(--moss)', act: () => this.openApp('contact', 'contact', 'Contact', { w: 480, h: 560 }) },
+    ];
+    const projs = this.state.content.projects.map((p, i) => ({ label: p.name, kind: 'project', glyph: p.glyph, tint: P[i % 4], act: () => this.openApp('proj:' + p.id, 'proj:' + p.id, p.name + '.app', { w: 600, h: 540 }) }));
+    const extra = [
+      { label: 'Toggle theme', kind: 'action', glyph: '\u263D', tint: 'var(--glacier)', act: () => this.setTheme(this.state.theme === 'dark' ? 'light' : 'dark') },
+      { label: 'Help', kind: 'guide', glyph: '?', tint: 'var(--moss)', act: () => this.openApp('help', 'help', 'Help', { w: 470, h: 500 }) },
+    ];
+    return [...secs, ...projs, ...extra];
+  }
+  filterSpot(q) { q = (q || '').toLowerCase().trim(); const all = this.spotDefs(); return q ? all.filter(x => (x.label + ' ' + x.kind).toLowerCase().indexOf(q) >= 0) : all; }
+
+  renderVals() {
+    const c = this.state.content; const P = ['var(--moss)', 'var(--glacier)', 'var(--berry)', 'var(--amber)'];
+    const acc = (arr) => arr.map((x, i) => ({ ...x, accent: P[i % 4] }));
+    const projView = c.projects.map((p, i) => ({ ...p, accent: P[i % 4], tags: (p.tagstr || '').split('\u00b7').map(s => s.trim()).filter(Boolean).map((t, j) => ({ id: p.id + '-' + j, text: t })) }));
+
+    const mob = this.state.mobile;
+    let winSrc = this.state.windows.filter(w => !w.minimized);
+    if (mob && winSrc.length > 1) winSrc = [winSrc[winSrc.length - 1]];
+    const windows = winSrc.map(w => {
+      const isProject = w.app.indexOf('proj:') === 0;
+      const pid = isProject ? w.app.slice(5) : null;
+      const proj = isProject ? projView.find(p => p.id === pid) : null;
+      let frameStr;
+      if (mob) {
+        frameStr = 'position:fixed; left:0; top:0; width:100%; height:100%; z-index:520; display:flex; flex-direction:column; background:var(--bg); overflow:hidden; animation:winIn .25s cubic-bezier(.16,1,.3,1);';
+      } else {
+        const WW = (typeof window !== 'undefined') ? window.innerWidth : 1200, HH = (typeof window !== 'undefined') ? window.innerHeight : 800;
+        let fx = w.x, fy = w.y, fw = w.w, fh = w.h;
+        if (w.max) { fx = 10; fy = 42; fw = WW - 20; fh = HH - 118; }
+        frameStr = 'position:absolute; z-index:' + w.z + '; left:' + fx + 'px; top:' + fy + 'px; width:' + fw + 'px; height:' + fh + 'px; display:flex; flex-direction:column; background:var(--bg); border:1px solid var(--line); border-radius:14px; box-shadow:0 30px 70px -28px rgba(0,0,0,0.7); overflow:hidden; animation:winIn .28s cubic-bezier(.16,1,.3,1);';
+      }
+      return {
+        key: w.id, title: w.title,
+        frame: frameStr,
+        showBody: true,
+        desktopChrome: !mob, mobileChrome: mob,
+        isProject, proj, shotId: 'shot-' + pid,
+        isAbout: w.app === 'about', isWriting: w.app === 'writing', isCerts: w.app === 'certs', isLife: w.app === 'life', isContact: w.app === 'contact', isInfo: w.app === 'info', isEditor: w.app === 'editor', isHelp: w.app === 'help',
+        focus: () => this.focusWin(w.id),
+        close: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.closeWin(w.id); },
+        dragStart: (e) => { if (e.target.closest && e.target.closest('[data-stop]')) return; this.focusWin(w.id); const cur = this.state.windows.find(x => x.id === w.id); this.drag = { kind: 'win', id: w.id, dx: e.clientX - cur.x, dy: e.clientY - cur.y }; document.body.style.cursor = 'default'; },
+        minimize: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState(s => ({ windows: s.windows.map(x => x.id === w.id ? { ...x, minimized: true } : x) })); },
+        maximize: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState(s => ({ windows: s.windows.map(x => x.id === w.id ? (x.max ? { ...x, max: false, x: x.rx, y: x.ry, w: x.rw, h: x.rh } : { ...x, max: true, rx: x.x, ry: x.y, rw: x.w, rh: x.h }) : x) })); },
+      };
+    });
+
+    const minimizedWins = this.state.windows.filter(w => w.minimized).map(w => ({ id: w.id, title: w.title, restore: () => { this.z += 1; const z = this.z; this.setState(s => ({ windows: s.windows.map(x => x.id === w.id ? { ...x, minimized: false, z } : x) })); } }));
+
+    const icons = projView.map((p, i) => {
+      const pos = this.state.iconPos[p.id] || { x: 28 + i * 112, y: 52 };
+      return {
+        id: p.id, label: p.name, glyph: p.glyph, accent: p.accent,
+        frame: 'position:absolute; z-index:2; left:' + pos.x + 'px; top:' + pos.y + 'px; width:96px; display:flex; flex-direction:column; align-items:center; gap:8px; background:transparent; border:none; cursor:default; padding:4px;',
+        down: (e) => { e.preventDefault(); this.drag = { kind: 'icon', id: p.id, dx: e.clientX - pos.x, dy: e.clientY - pos.y }; },
+        open: () => this.openApp('proj:' + p.id, 'proj:' + p.id, p.name + '.app', { w: 600, h: 540 }),
+      };
+    });
+
+    const dockDefs = [
+      { id: 'about', app: 'about', label: 'About', glyph: '\u2302', tint: 'var(--moss)', size: { w: 520, h: 460 } },
+      { id: 'writing', app: 'writing', label: 'Writing', glyph: '\u270E', tint: 'var(--glacier)', size: { w: 520, h: 440 } },
+      { id: 'certs', app: 'certs', label: 'Certs', glyph: '\u2713', tint: 'var(--amber)', size: { w: 520, h: 420 } },
+      { id: 'life', app: 'life', label: 'Life', glyph: '\u26F0', tint: 'var(--berry)', size: { w: 500, h: 400 } },
+      { id: 'contact', app: 'contact', label: 'Contact', glyph: '\u2709', tint: 'var(--moss)', size: { w: 480, h: 560 } },
+    ];
+    const openIds = this.state.windows.map(w => w.id);
+    const dock = dockDefs.map(d => ({ label: d.label, glyph: d.glyph, tint: d.tint, dot: openIds.indexOf(d.id) >= 0 ? 'var(--fg)' : 'transparent', open: () => this.openApp(d.id, d.app, d.label, d.size) }));
+    const mkA = (label, glyph, tint, act) => ({ label, glyph, tint, open: act });
+    const mobileGrid = [
+      ...projView.map((p, i) => mkA(p.name, p.glyph, P[i % 4], () => this.openApp('proj:' + p.id, 'proj:' + p.id, p.name + '.app'))),
+      mkA('Help', '?', 'var(--moss)', () => this.openApp('help', 'help', 'Help')),
+    ];
+    const mobileDock = [
+      mkA('About', '\u2302', 'var(--moss)', () => this.openApp('about', 'about', 'About')),
+      mkA('Writing', '\u270E', 'var(--glacier)', () => this.openApp('writing', 'writing', 'Writing')),
+      mkA('Certs', '\u2713', 'var(--amber)', () => this.openApp('certs', 'certs', 'Certifications')),
+      mkA('Life', '\u26F0', 'var(--berry)', () => this.openApp('life', 'life', 'Life')),
+      mkA('Contact', '\u2709', 'var(--moss)', () => this.openApp('contact', 'contact', 'Contact')),
+    ];
+
+    // MENU BAR
+    const mk = (label, items, key, opts) => ({ label, items, open: this.state.menu === key, bg: this.state.menu === key ? 'var(--bg3)' : 'transparent', font: (opts && opts.mono) ? "'JetBrains Mono',monospace" : "'Space Grotesk',sans-serif", weight: (opts && opts.bold) ? 700 : 400, toggle: (e) => { e.stopPropagation(); this.setState(s => ({ menu: s.menu === key ? null : key })); } });
+    const I = (label, run, hint) => ({ label, run: (e) => { e.stopPropagation(); run(); }, hint: hint || '', color: 'var(--fg)' });
+    const openProjects = projView.map(p => I(p.name + '.app', () => this.openApp('proj:' + p.id, 'proj:' + p.id, p.name + '.app', { w: 600, h: 540 })));
+    const menus = [
+      mk('\u25C6 KyleOS', [ I('About KyleOS', () => this.openApp('info', 'info', 'About KyleOS', { w: 400, h: 380 })), I('Help', () => this.openApp('help', 'help', 'Help', { w: 470, h: 500 })), I('Toggle theme', () => this.setTheme(this.state.theme === 'dark' ? 'light' : 'dark'), this.mod + 'T'), I('Restart', () => { this.z = 10; this.setState({ windows: [], menu: null }); }) ], 'apple', { bold: true }),
+      mk('File', [ I('Close all windows', () => this.setState({ windows: [], menu: null }), 'esc'), I('Reset desktop', () => { const ip = {}; this.state.content.projects.forEach((p, i) => { ip[p.id] = { x: 28 + i * 112, y: 52 }; }); this.setState({ iconPos: ip, windows: [], menu: null }); }) ], 'file'),
+      mk('View', [ I('Dark theme', () => { this.setState({ menu: null }); this.setTheme('dark'); }), I('Light theme', () => { this.setState({ menu: null }); this.setTheme('light'); }) ], 'view'),
+      mk('Go', [ I('About', () => this.openApp('about', 'about', 'About', { w: 520, h: 460 })), I('Writing', () => this.openApp('writing', 'writing', 'Writing', { w: 520, h: 440 })), I('Certifications', () => this.openApp('certs', 'certs', 'Certs', { w: 520, h: 420 })), I('Life', () => this.openApp('life', 'life', 'Life', { w: 500, h: 400 })), I('Contact', () => this.openApp('contact', 'contact', 'Contact', { w: 480, h: 560 })), ...openProjects ], 'go'),
+    ];
+
+    const fs = this.filterSpot(this.state.spotQuery);
+    const spotIndex = Math.min(this.state.spotIndex, Math.max(0, fs.length - 1));
+    const spotItems = fs.map((x, i) => ({ label: x.label, kind: x.kind, glyph: x.glyph, tint: x.tint, bg: i === spotIndex ? 'var(--bg3)' : 'transparent', run: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ spotlight: false, spotQuery: '' }); x.act(); }, hover: () => this.setState({ spotIndex: i }) }));
+
+    const edSecs = [ { id: 'profile', num: '01', label: 'Profile' }, { id: 'about', num: '02', label: 'About' }, { id: 'work', num: '03', label: 'Work' }, { id: 'writing', num: '04', label: 'Writing' }, { id: 'certs', num: '05', label: 'Certs' }, { id: 'life', num: '06', label: 'Life' }, { id: 'contact', num: '07', label: 'Contact' } ];
+    const editNav = edSecs.map(s => ({ label: s.label, num: s.num, bg: this.state.editSection === s.id ? 'var(--bg3)' : 'transparent', fg: this.state.editSection === s.id ? 'var(--moss)' : 'var(--fg-dim)', sel: () => this.setState({ editSection: s.id }) }));
+    const ES = this.state.editSection;
+
+    return {
+      rootRef: this.rootRef,
+      hero: c.hero, about: c.about, facts: acc(c.about.facts),
+      publications: acc(c.publications), certs: acc(c.certs), hobbies: acc(c.hobbies),
+      contact: { ...c.contact, emailHref: 'mailto:' + c.contact.email },
+      windows, icons, dock, menus,
+      clock: this.state.clock, dateStr: this.state.dateStr,
+      themeIcon: this.state.theme === 'dark' ? '\u263D' : '\u2600',
+      toggleTheme: () => this.setTheme(this.state.theme === 'dark' ? 'light' : 'dark'),
+      deskDown: (e) => { if (this.state.menu && !(e.target.closest && e.target.closest('[data-menu]'))) this.setState({ menu: null }); },
+      editProjects: c.projects,
+      minimizedWins, hasMinimized: minimizedWins.length > 0,
+      authed: this.state.authed, loginOpen: !!this.state.login, isCreds: this.state.loginStep === 'creds', isCode: this.state.loginStep === 'code',
+      editNav, edProfile: ES === 'profile', edAbout: ES === 'about', edWork: ES === 'work', edWriting: ES === 'writing', edCerts: ES === 'certs', edLife: ES === 'life', edContact: ES === 'contact',
+      openEditor: () => this.openEditor(),
+      openHelp: () => this.openApp('help', 'help', 'Help', { w: 470, h: 500 }),
+      contactSent: this.state.contactSent, contactUnsent: !this.state.contactSent,
+      sendContact: (e) => { e.preventDefault(); this.setState({ contactSent: true }); },
+      contactReset: () => this.setState({ contactSent: false }),
+      isDesktop: !mob, isMobile: mob,
+      mobileHome: mob && this.state.windows.filter(w => !w.minimized).length === 0,
+      mobileGrid, mobileDock, modKey: this.mod,
+      submitCreds: (e) => { e.preventDefault(); this.setState({ loginStep: 'code' }); },
+      backToCreds: () => this.setState({ loginStep: 'creds' }),
+      cancelLogin: () => this.setState({ login: null, loginStep: 'creds' }),
+      verifyCode: (e) => { e.preventDefault(); this.setState({ authed: true, login: null, loginStep: 'creds' }); this.openApp('editor', 'editor', 'Content Editor', { w: 760, h: 620 }); },
+      codeInput: (e) => { const t = e.target; if (!t.hasAttribute || !t.hasAttribute('data-otp')) return; t.value = t.value.replace(/[^0-9]/g, '').slice(0, 1); if (t.value && t.nextElementSibling) t.nextElementSibling.focus(); },
+      codeKey: (e) => { if (e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling) e.target.previousElementSibling.focus(); },
+      resetContent: () => { if (confirm('Reset all content to the original placeholders?')) this.setState({ content: this.defaults() }, () => this.persist()); },
+      onAdminInput: (e) => { const t = e.target; const path = t.getAttribute && t.getAttribute('data-path'); if (!path) return; this.setState(s => { const content = JSON.parse(JSON.stringify(s.content)); this.setByPath(content, path, t.value); return { content }; }, () => this.persist()); },
+      onAdminClick: (e) => { const b = e.target.closest && e.target.closest('[data-action]'); if (!b) return; e.preventDefault(); const action = b.getAttribute('data-action'); const list = b.getAttribute('data-list'); const index = parseInt(b.getAttribute('data-index'), 10); this.setState(s => { const content = JSON.parse(JSON.stringify(s.content)); const arr = this.getByPath(content, list); if (!Array.isArray(arr)) return {}; if (action === 'add') arr.push(this.newItem(list)); else if (action === 'remove') arr.splice(index, 1); return { content }; }, () => this.persist()); },
+      booting: this.state.booting, spotlight: this.state.spotlight, spotQuery: this.state.spotQuery, spotItems,
+      openSpotlight: () => this.setState({ spotlight: true, spotQuery: '', spotIndex: 0 }),
+      closeSpot: () => this.setState({ spotlight: false }),
+      stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
+      spotInput: (e) => this.setState({ spotQuery: e.target.value, spotIndex: 0 }),
+      spotKey: (e) => { const fs = this.filterSpot(this.state.spotQuery); if (e.key === 'ArrowDown') { e.preventDefault(); this.setState(s => ({ spotIndex: Math.min(s.spotIndex + 1, Math.max(0, fs.length - 1)) })); } else if (e.key === 'ArrowUp') { e.preventDefault(); this.setState(s => ({ spotIndex: Math.max(0, s.spotIndex - 1) })); } else if (e.key === 'Enter') { e.preventDefault(); const it = fs[Math.min(this.state.spotIndex, fs.length - 1)]; if (it) { this.setState({ spotlight: false, spotQuery: '' }); it.act(); } } else if (e.key === 'Escape') { this.setState({ spotlight: false }); } },
+    };
+  }
+}
+</script>
+</body>
+</html>

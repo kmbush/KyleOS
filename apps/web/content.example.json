@@ -1,0 +1,117 @@
+{
+  "hero": {
+    "name": "Kyle Bush",
+    "role": "Senior Solutions Architect @ AWS",
+    "location": "Seattle, WA",
+    "tagline": "A classically trained software engineer designing resilient, well-architected cloud systems from the Pacific Northwest.",
+    "sticky": "Senior Solutions Architect at AWS, classically trained engineer. I design cloud systems that hold up under real load — from the PNW fog."
+  },
+  "about": {
+    "heading": "I turn ambiguous problems into systems that hold up under load.",
+    "body": [
+      {
+        "id": "a1",
+        "text": "Senior Solutions Architect at AWS and a classically trained software engineer. I help teams design cloud systems that are secure, cost-aware, and boringly reliable — and I still read the source."
+      },
+      {
+        "id": "a2",
+        "text": "That classical foundation — data structures, distributed systems, the discipline of maintainable code — is the lens I bring to every architecture conversation."
+      }
+    ],
+    "facts": [
+      { "id": "f1", "label": "Based in", "value": "Seattle, WA" },
+      { "id": "f2", "label": "Focus", "value": "Cloud architecture" },
+      { "id": "f3", "label": "Languages", "value": "Go, Python, TS" },
+      { "id": "f4", "label": "Currently", "value": "WA reviews" }
+    ]
+  },
+  "projects": [
+    {
+      "id": "p1",
+      "name": "Cedar",
+      "glyph": "⌘",
+      "tagstr": "Go · CDK · Policy-as-Code",
+      "desc": "A policy engine that lints CloudFormation & CDK against the Well-Architected pillars before anything deploys. Cedar turns tribal architecture knowledge into automated guardrails so teams catch cost, security, and reliability foot-guns in CI instead of in production.",
+      "repo": "https://github.com/",
+      "live": ""
+    },
+    {
+      "id": "p2",
+      "name": "Fogline",
+      "glyph": "◒",
+      "tagstr": "TypeScript · Lambda · DynamoDB",
+      "desc": "A serverless status-page generator with edge caching and zero cold-start on the read path. Built to stay up when everything else is down — the read path never touches a cold Lambda.",
+      "repo": "https://github.com/",
+      "live": "https://example.com"
+    },
+    {
+      "id": "p3",
+      "name": "driftwood",
+      "glyph": "≈",
+      "tagstr": "Rust · WASM",
+      "desc": "A tiny CRDT library for offline-first apps, compiled to WASM and under 12kb gzipped. Conflict-free sync without dragging in a megabyte of dependencies.",
+      "repo": "https://github.com/",
+      "live": ""
+    },
+    {
+      "id": "p4",
+      "name": "Trailhead CLI",
+      "glyph": "⌸",
+      "tagstr": "Python · Click",
+      "desc": "A developer CLI that scaffolds a production-ready AWS account baseline — org structure, guardrails, logging, and identity — in one command.",
+      "repo": "https://github.com/",
+      "live": ""
+    },
+    {
+      "id": "p5",
+      "name": "KyleOS",
+      "glyph": "■",
+      "tagstr": "Design · Frontend",
+      "desc": "The desktop you are using right now. A portfolio reimagined as a tiny operating system, with draggable windows, a live dock, and a working menu bar.",
+      "repo": "https://github.com/",
+      "live": ""
+    }
+  ],
+  "publications": [
+    {
+      "id": "w1",
+      "title": "Designing for the failure you did not plan for",
+      "outlet": "blog",
+      "date": "2026",
+      "url": "https://example.com"
+    },
+    {
+      "id": "w2",
+      "title": "The cost of the abstraction you never questioned",
+      "outlet": "Medium",
+      "date": "2025",
+      "url": "https://example.com"
+    },
+    {
+      "id": "w3",
+      "title": "A field guide to Well-Architected reviews",
+      "outlet": "AWS Builders",
+      "date": "2025",
+      "url": "https://example.com"
+    }
+  ],
+  "certs": [
+    { "id": "c1", "name": "Solutions Architect – Pro", "issuer": "AWS", "year": "2025" },
+    { "id": "c2", "name": "DevOps Engineer – Pro", "issuer": "AWS", "year": "2024" },
+    { "id": "c3", "name": "Security – Specialty", "issuer": "AWS", "year": "2024" },
+    { "id": "c4", "name": "Kubernetes Admin", "issuer": "CNCF", "year": "2023" }
+  ],
+  "hobbies": [
+    { "id": "h1", "name": "Backpacking", "note": "Alpine lakes and Cascade ridgelines." },
+    { "id": "h2", "name": "Film photography", "note": "35mm, mostly fog and cedar." },
+    { "id": "h3", "name": "Coffee", "note": "Pour-over pedantry." },
+    { "id": "h4", "name": "Woodworking", "note": "Things I can touch." }
+  ],
+  "contact": {
+    "note": "Let’s build something that lasts.",
+    "email": "kyle@example.com",
+    "github": "https://github.com/",
+    "linkedin": "https://linkedin.com/",
+    "blog": "https://example.com"
+  }
+}

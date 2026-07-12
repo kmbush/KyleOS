@@ -1,0 +1,163 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# OIDC only. No long-lived AWS keys anywhere. (ADR-007)
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # Nothing environment-specific is committed. (ADR-006)
+  # Set these as GitHub repo variables/secrets — a forker sets their own.
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  TF_VERSION: "1.9.0"
+  NODE_VERSION: "20"
+
+jobs:
+  # ADR-006. A leaked account ID, ARN, or endpoint fails the build.
+  # This repo is public and must stay forkable.
+  leak-check:
+    name: No environment values in the repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan tracked files
+        run: bash scripts/leak-check.sh
+
+  verify:
+    name: Lint, typecheck, test, build
+    needs: leak-check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - run: npm ci
+      - run: npx biome ci .
+      - run: npx tsc --noEmit
+      - run: npm run test -- --run
+
+      - run: npm run build
+
+      - name: E2E
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
+          retention-days: 1
+
+  plan:
+    name: Terraform plan
+    needs: verify
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      # State backend config is passed in, never committed. (ADR-006)
+      - name: Plan
+        working-directory: infra
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=kyleos/terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}"
+          terraform plan -no-color
+
+  deploy:
+    name: Apply, configure, sync, invalidate
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform apply
+        id: tf
+        working-directory: infra
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=kyleos/terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}"
+          terraform apply -auto-approve
+          {
+            echo "bucket=$(terraform output -raw site_bucket)"
+            echo "distribution=$(terraform output -raw cloudfront_id)"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: dist
+
+      # The app fetches this at boot. Generated from Terraform outputs, never
+      # committed, never baked into the bundle. (ADR-006)
+      - name: Generate config.json
+        working-directory: infra
+        run: |
+          terraform output -json runtime_config > ../dist/config.json
+          echo "--- config.json ---"
+          cat ../dist/config.json
+
+      # Hashed assets cache forever. index.html, config.json, content.json never do.
+      - name: Sync hashed assets
+        run: |
+          aws s3 sync dist "s3://${{ steps.tf.outputs.bucket }}" \
+            --exclude "index.html" \
+            --exclude "config.json" \
+            --exclude "content.json" \
+            --cache-control "public,max-age=31536000,immutable"
+
+      - name: Sync index.html and config.json
+        run: |
+          aws s3 cp dist/index.html "s3://${{ steps.tf.outputs.bucket }}/index.html" \
+            --cache-control "no-cache"
+          aws s3 cp dist/config.json "s3://${{ steps.tf.outputs.bucket }}/config.json" \
+            --cache-control "no-cache"
+
+      # content.json is owned by the admin editor, not the deploy. Never touch it.
+      # (ADR-002 — it is data, not code.)
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ steps.tf.outputs.distribution }}" \
+            --paths "/" "/index.html" "/config.json"
