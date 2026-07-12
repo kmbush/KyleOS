@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars and fill in. terraform.tfvars is gitignored (ADR-006).
+# Only these four values are account-specific; everything else has a sane default
+# in variables.tf. Placeholders only here — no real account values are committed.
+
+region                  = "us-west-2"
+domain_name             = "<your-domain.com>"
+contact_sender_email    = "<you@example.com>"
+contact_recipient_email = "<you@example.com>"
