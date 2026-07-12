@@ -24,6 +24,22 @@ variable "contact_recipient_email" {
   type        = string
 }
 
+variable "github_repo" {
+  description = "GitHub repo (owner/name) allowed to assume the deploy role via OIDC."
+  type        = string
+}
+
+variable "tf_state_bucket" {
+  description = "S3 bucket holding Terraform state; bootstrapped outside this stack."
+  type        = string
+}
+
+variable "create_github_oidc_provider" {
+  description = "Create the GitHub OIDC provider. false references an existing one (Kyle); true creates it (a fresh account without one)."
+  type        = bool
+  default     = false
+}
+
 # --- Tunable defaults: safe to leave as-is ---
 
 variable "project_name" {

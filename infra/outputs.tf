@@ -26,3 +26,8 @@ output "cloudfront_id" {
   description = "Distribution ID; deploy.yml invalidates it after a deploy."
   value       = aws_cloudfront_distribution.site.id
 }
+
+output "deploy_role_arn" {
+  description = "OIDC deploy role GitHub Actions assumes; set as the AWS_DEPLOY_ROLE_ARN secret."
+  value       = aws_iam_role.deploy.arn
+}

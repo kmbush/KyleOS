@@ -11,3 +11,11 @@ domain_name = ""
 
 contact_sender_email    = "<you@example.com>"
 contact_recipient_email = "<you@example.com>"
+
+# GitHub Actions OIDC deploy role (Phase 5).
+github_repo     = "<owner>/<repo>"
+tf_state_bucket = "<your-terraform-state-bucket>"
+
+# The GitHub OIDC provider usually already exists in the account, so this defaults to
+# false (the role references it). Set true only in a fresh account that has none yet.
+# create_github_oidc_provider = false
