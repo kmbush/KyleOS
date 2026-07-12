@@ -3,12 +3,19 @@
 // just gates the editor's UI. Shell-agnostic: it overlays desktop and mobile alike.
 import { useAuth } from "../stores/useAuth";
 import { CredsStep } from "./CredsStep";
+import { TotpSetupStep } from "./TotpSetupStep";
 import { TotpStep } from "./TotpStep";
 
 export function LoginGate({ onClose }: { onClose: () => void }) {
   const step = useAuth((s) => s.step);
   const error = useAuth((s) => s.error);
   const cancel = useAuth((s) => s.cancel);
+
+  const stepView = () => {
+    if (step === "totp") return <TotpStep onBack={cancel} />;
+    if (step === "mfa_setup") return <TotpSetupStep onBack={cancel} />;
+    return <CredsStep onCancel={onClose} />;
+  };
 
   return (
     <div
@@ -29,7 +36,7 @@ export function LoginGate({ onClose }: { onClose: () => void }) {
             owner access
           </span>
         </div>
-        {step === "totp" ? <TotpStep onBack={cancel} /> : <CredsStep onCancel={onClose} />}
+        {stepView()}
         {error && <p className="m-0 mt-4 font-mono text-xs text-berry">{error}</p>}
       </div>
     </div>

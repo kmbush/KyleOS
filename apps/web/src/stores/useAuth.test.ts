@@ -5,14 +5,23 @@ import { useAuth } from "./useAuth";
 vi.mock("../lib/cognito", () => ({
   signIn: vi.fn(),
   submitTotp: vi.fn(),
+  completeMfaSetup: vi.fn(),
   signOut: vi.fn(),
 }));
 
 const signIn = vi.mocked(cognito.signIn);
 const submitTotp = vi.mocked(cognito.submitTotp);
+const completeMfaSetup = vi.mocked(cognito.completeMfaSetup);
 
 beforeEach(() => {
-  useAuth.setState({ step: "creds", jwt: null, error: null, pending: false });
+  useAuth.setState({
+    step: "creds",
+    jwt: null,
+    error: null,
+    pending: false,
+    setupSecret: null,
+    setupOtpauthUri: null,
+  });
 });
 afterEach(() => vi.clearAllMocks());
 
@@ -28,6 +37,39 @@ describe("useAuth", () => {
     signIn.mockResolvedValue({ status: "AUTHENTICATED", jwt: "id-token" });
     await useAuth.getState().submitCreds("k@example.com", "pw");
     expect(useAuth.getState()).toMatchObject({ step: "authed", jwt: "id-token" });
+  });
+
+  it("enters the enrollment step with the secret when MFA is not yet set up", async () => {
+    signIn.mockResolvedValue({
+      status: "MFA_SETUP",
+      secret: "SEED123456",
+      otpauthUri: "otpauth://totp/KyleOS:k@example.com?secret=SEED123456&issuer=KyleOS",
+    });
+    await useAuth.getState().submitCreds("k@example.com", "pw");
+    expect(useAuth.getState()).toMatchObject({
+      step: "mfa_setup",
+      setupSecret: "SEED123456",
+      jwt: null,
+    });
+  });
+
+  it("authenticates and clears the secret when enrollment is completed", async () => {
+    useAuth.setState({ step: "mfa_setup", setupSecret: "SEED123456" });
+    completeMfaSetup.mockResolvedValue({ jwt: "id-token" });
+    await useAuth.getState().completeMfaSetup("123456");
+    expect(useAuth.getState()).toMatchObject({
+      step: "authed",
+      jwt: "id-token",
+      setupSecret: null,
+    });
+  });
+
+  it("keeps the owner on the setup step when the enrollment code is rejected", async () => {
+    useAuth.setState({ step: "mfa_setup", setupSecret: "SEED123456" });
+    completeMfaSetup.mockRejectedValue(new Error("That code was not accepted."));
+    await useAuth.getState().completeMfaSetup("000000");
+    expect(useAuth.getState().step).toBe("mfa_setup");
+    expect(useAuth.getState().error).toBe("That code was not accepted.");
   });
 
   it("surfaces a sign-in failure and stays on the creds step", async () => {

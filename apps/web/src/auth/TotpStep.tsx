@@ -1,24 +1,14 @@
-// Step two of owner sign-in: six auto-advancing single-character boxes. Cognito
-// validates the code (ADR-003) — here we only collect it. The auto-advance and
-// backspace rules live in lib/otp so they can be tested without a DOM.
-import { useEffect, useRef, useState } from "react";
-import { applyOtpBackspace, applyOtpEntry, OTP_LENGTH } from "../lib/otp";
+// Step two of owner sign-in when TOTP is already enrolled: six code boxes. Cognito
+// validates the code (ADR-003) — here we only collect it.
+import { useState } from "react";
+import { OTP_LENGTH } from "../lib/otp";
 import { useAuth } from "../stores/useAuth";
-
-// Stable per-position keys — the boxes never reorder, so these carry no index.
-const BOXES = ["d1", "d2", "d3", "d4", "d5", "d6"];
+import { OtpInputs } from "./OtpInputs";
 
 export function TotpStep({ onBack }: { onBack: () => void }) {
   const submitTotp = useAuth((s) => s.submitTotp);
   const pending = useAuth((s) => s.pending);
-  const [digits, setDigits] = useState<string[]>(() => Array(OTP_LENGTH).fill(""));
-  const boxes = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => boxes.current[0]?.focus(), []);
-
-  const focus = (index: number) => boxes.current[index]?.focus();
-
-  const code = digits.join("");
+  const [code, setCode] = useState("");
 
   return (
     <>
@@ -32,33 +22,7 @@ export function TotpStep({ onBack }: { onBack: () => void }) {
           submitTotp(code);
         }}
       >
-        <div className="mb-[18px] flex gap-2">
-          {BOXES.map((boxKey, index) => (
-            <input
-              key={boxKey}
-              ref={(el) => {
-                boxes.current[index] = el;
-              }}
-              inputMode="numeric"
-              maxLength={1}
-              autoComplete="off"
-              value={digits[index] ?? ""}
-              onChange={(e) => {
-                const next = applyOtpEntry(digits, index, e.target.value);
-                setDigits(next.digits);
-                focus(next.focus);
-              }}
-              onKeyDown={(e) => {
-                if (e.key !== "Backspace") return;
-                e.preventDefault();
-                const next = applyOtpBackspace(digits, index);
-                setDigits(next.digits);
-                focus(next.focus);
-              }}
-              className="field text-center font-mono text-xl"
-            />
-          ))}
-        </div>
+        <OtpInputs onChange={setCode} />
         <button
           type="submit"
           disabled={pending || code.length < OTP_LENGTH}
