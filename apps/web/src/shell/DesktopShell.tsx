@@ -2,6 +2,7 @@
 // open windows, the dock, and Spotlight (⌘K / Ctrl+K).
 import { useEffect, useState } from "react";
 import { useWindowManager } from "../stores/useWindowManager";
+import { DotGrid } from "./DotGrid";
 import { AmbientWidgets } from "./desktop/AmbientWidgets";
 import { DesktopIcons } from "./desktop/DesktopIcons";
 import { Dock } from "./desktop/Dock";
@@ -29,14 +30,7 @@ export function DesktopShell() {
 
   return (
     <div className="relative h-screen select-none overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 opacity-45"
-        style={{
-          backgroundImage: "radial-gradient(var(--line) 1px, transparent 1px)",
-          backgroundSize: "30px 30px",
-        }}
-      />
+      <DotGrid />
       <MenuBar onOpenSpotlight={() => setSpotlight(true)} />
       <Watermark />
       <AmbientWidgets />

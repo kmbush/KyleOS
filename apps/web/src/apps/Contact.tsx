@@ -1,10 +1,13 @@
 // Contact: the closing line and a message form. Not wired to a backend yet —
 // Phase 4 connects it to POST /contact and removes the prototype confirmation.
 import { useState } from "react";
+import { GitHubMark, LinkedInMark } from "../components/SocialIcons";
 import { useContent } from "../lib/useContent";
+import { useIsMobile } from "../lib/useIsMobile";
 
 export function Contact() {
   const { contact } = useContent();
+  const isMobile = useIsMobile();
   const [sent, setSent] = useState(false);
 
   if (sent) {
@@ -56,6 +59,28 @@ export function Contact() {
           Send message
         </button>
       </form>
+      {isMobile && (
+        <div className="mt-5 flex gap-3">
+          <a
+            href={contact.github}
+            target="_blank"
+            rel="noopener"
+            title="GitHub"
+            className="grid size-11 place-items-center rounded-xl border border-line text-fg-dim"
+          >
+            <GitHubMark size={22} />
+          </a>
+          <a
+            href={contact.linkedin}
+            target="_blank"
+            rel="noopener"
+            title="LinkedIn"
+            className="grid size-11 place-items-center rounded-xl border border-line text-fg-dim"
+          >
+            <LinkedInMark size={22} />
+          </a>
+        </div>
+      )}
     </>
   );
 }
