@@ -217,6 +217,39 @@ grep -rniE 'AKIA|[0-9]{12}|arn:aws|execute-api|amazonaws\.com|us-[a-z]+-[0-9]' \
 
 ---
 
+### ADR-009 — Shared content schema: author in TypeScript, generate JSON Schema, validate in Python
+
+**Decision:** `apps/web/src/lib/schema.ts` (the `Content` interface) stays the single, human-authored source of truth for the content shape. A build step **generates** `apps/web/src/lib/schema.json` (JSON Schema, draft-07) from it with `ts-json-schema-generator`. The generated file is committed. The `PUT /content` Lambda validates request bodies against that same `schema.json` (ADR-010). One authored definition; every other artifact derives from it or is checked against it — satisfying the §8 mandate to "define the schema once and share it."
+
+**Sync is CI-enforced, not aspirational:**
+- `npm run schema:gen` regenerates `schema.json` from `schema.ts` (draft-07; `additionalProperties: false` on objects; `image` optional).
+- A Vitest drift test regenerates in memory and **deep-equals the committed `schema.json`** (parsed, not byte-compared, so Biome may reformat the file). Editing `schema.ts` without regenerating fails the build.
+- `content.example.json` is imported as `Content` (`useContent`), so `tsc` proves the seed matches the TS type.
+- A Python test validates `content.example.json` against `schema.json`, proving the generated schema accepts the real seed shape.
+- The `put_content` build copies the committed `schema.json` into the function package; the handler compiles the validator once at cold start.
+
+**Rejected — author JSON Schema, generate TypeScript (invert):** JSON Schema is verbose to hand-write and would demote the repo's cleanest artifact — the 40-line `Content` interface — to a generated file behind a DO-NOT-EDIT banner. The human-readable format should be the one humans author; the machine format is what the machine (Python) reads.
+
+**Rejected — hand-maintain `schema.ts` and `schema.json` in parallel with a test:** you cannot mechanically prove a TS type equals a JSON Schema without a generator, so "no drift" would be a hope, not an invariant. §8 and CONVENTIONS §TypeScript require it enforced.
+
+**Rejected — a runtime schema DSL (e.g. zod + zod-to-json-schema):** moves the source of truth into a runtime library and pulls a schema DSL into the bundle. `schema.ts` stays types-only and erases at build.
+
+**New dependency:** `ts-json-schema-generator` — frontend **devDependency**, build/test only, never shipped in the bundle. **License: MIT.**
+
+---
+
+### ADR-010 — `fastjsonschema` for Lambda content validation
+
+**Decision:** the `PUT /content` Lambda validates against `schema.json` (ADR-009) with `fastjsonschema`, which compiles the schema to pure-Python validation code once at cold start. A malformed body is rejected with 400 before any S3 write. A bad PUT must never persist — it bricks the site (§8).
+
+**Rejected — `jsonschema` (the reference implementation):** pulls a transitive native dependency (`rpds-py`, a compiled Rust wheel) that forces platform/arch-specific packaging (manylinux, arm64) into the Lambda zip. That is packaging friction a forker would trip over. `fastjsonschema` is pure Python — trivial to vendor, no wheels, works on any Lambda architecture.
+
+**Rejected — hand-rolled structural validation in Python:** more code, drifts from the schema, and re-implements a solved problem. A declarative schema the Python side consumes is smaller and is the whole point of ADR-009.
+
+**New dependency:** `fastjsonschema` — Python, `put_content` Lambda only, vendored into the zip. **License: BSD-3-Clause.** Permissive, no copyleft.
+
+---
+
 ## 6. System architecture
 
 ```mermaid
@@ -409,10 +442,15 @@ Terraform. Monorepo. Everything as code. No console clicks.
 
 ## 13. Open questions for Kyle
 
-These block nothing in Phases 0–2. They must be answered before Phase 3.
+**Resolved (Phase 3):**
 
-1. **Domain name** — what is it, and is it already in Route 53?
-2. **AWS account + region** — which account, and which region for the API stack?
-3. **Real content** — everything in `content.example.json` is fictional (`Senior Solutions Architect @ AWS`, `Seattle, WA`, five invented projects, `kyle@example.com`, bare `https://github.com/` links). Kyle supplies real content **through the admin editor after launch**; it is never committed (ADR-002).
+1. **Domain / DNS** — the domain already exists in Route 53. Terraform references the existing hosted zone through a **data source** (zone name is a variable in `terraform.tfvars`); it does not create the zone. Apex + `www` alias records are Terraform-managed.
+2. **AWS account + region** — the app stack deploys to **us-west-2** (a variable). The ACM certificate for CloudFront stays in **us-east-1** via a provider alias (CloudFront requirement). The owner applies Terraform **manually with his own credentials**; no CI apply access is assumed for Phase 3. No real account-specific value is committed.
 
-**Resolved:** repo strategy — a **new repository**, private during the build, public after the Phase 6 gate. The old portfolio repo is archived (not deleted) two weeks after cutover. Full detail in `docs/GIT_STRATEGY.md`.
+**Still open:**
+
+3. **Real content** — everything in `content.example.json` is fictional (`Senior Solutions Architect @ AWS`, `Seattle, WA`, five invented projects, `kyle@example.com`, bare `https://github.com/` links). Kyle supplies real content **through the admin editor after launch** (Phase 6); it is never committed (ADR-002).
+
+**Resolved (earlier):** repo strategy — a **new repository**, private during the build, public after the Phase 6 gate. The old portfolio repo is archived (not deleted) two weeks after cutover. Full detail in `docs/GIT_STRATEGY.md`.
+
+**Phase 3 direction** — the decisions this section unblocks (shared schema, Terraform structure, Lambda packaging, `config.json` generation, read-path lifecycle, frontend wiring, IAM) are resolved in `docs/PHASE3.md`.
