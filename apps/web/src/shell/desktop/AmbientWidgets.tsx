@@ -1,6 +1,6 @@
 // Ambient desktop widgets: the clock/date card and status card (top-right), and
-// the rotated amber sticky-note bio (bottom-left). Chrome copy is fixed; the
-// location and bio come from content so an edit is reflected here too.
+// the rotated amber sticky-note bio (bottom-left). Labels are fixed chrome; the
+// location, status, focus, name, and bio come from content so edits reflect here.
 import { useClock } from "../../lib/useClock";
 import { useContent } from "../../lib/useContent";
 
@@ -36,10 +36,8 @@ export function AmbientWidgets() {
             />
             status
           </div>
-          <p className="m-0 text-sm leading-[1.5]">Available for interesting cloud problems.</p>
-          <p className="mt-[11px] mb-0 font-mono text-[11px] text-fg-faint">
-            focus: Well-Architected reviews
-          </p>
+          <p className="m-0 text-sm leading-[1.5]">{hero.status}</p>
+          <p className="mt-[11px] mb-0 font-mono text-[11px] text-fg-faint">focus: {hero.focus}</p>
         </div>
       </div>
 

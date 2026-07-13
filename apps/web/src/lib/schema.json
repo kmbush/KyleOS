@@ -22,6 +22,12 @@
             },
             "sticky": {
               "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "focus": {
+              "type": "string"
             }
           },
           "required": [
@@ -29,7 +35,9 @@
             "role",
             "location",
             "timezone",
-            "sticky"
+            "sticky",
+            "status",
+            "focus"
           ],
           "additionalProperties": false
         },

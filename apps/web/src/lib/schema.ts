@@ -10,6 +10,8 @@ export interface Content {
     location: string;
     timezone: string; // IANA name (e.g. "America/Los_Angeles") — drives the desktop clock
     sticky: string; // sticky-note bio, bottom-left
+    status: string; // desktop status card — the availability line
+    focus: string; // desktop status card — current focus, shown after "focus:"
   };
   about: {
     heading: string;

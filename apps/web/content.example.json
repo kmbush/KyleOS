@@ -4,7 +4,9 @@
     "role": "Senior Solutions Architect @ AWS",
     "location": "Seattle, WA",
     "timezone": "America/Los_Angeles",
-    "sticky": "Senior Solutions Architect at AWS, classically trained engineer. I design cloud systems that hold up under real load — from the PNW fog."
+    "sticky": "Senior Solutions Architect at AWS, classically trained engineer. I design cloud systems that hold up under real load — from the PNW fog.",
+    "status": "Available for interesting cloud problems.",
+    "focus": "Well-Architected reviews"
   },
   "about": {
     "heading": "I turn ambiguous problems into systems that hold up under load.",

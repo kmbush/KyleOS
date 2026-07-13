@@ -269,6 +269,12 @@ function ProfileForm({ content, commit }: FormProps) {
         onChange={(v) => set({ sticky: v })}
         multiline
       />
+      <Field
+        label="Status (desktop card)"
+        value={hero.status}
+        onChange={(v) => set({ status: v })}
+      />
+      <Field label="Focus (desktop card)" value={hero.focus} onChange={(v) => set({ focus: v })} />
     </div>
   );
 }
