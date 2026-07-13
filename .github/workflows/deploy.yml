@@ -93,6 +93,11 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # Public repo, public logs: redact the account ID everywhere downstream, so
+      # ARNs and bucket names (e.g. kyleos-site-<id>) print as kyleos-site-***.
+      - name: Mask AWS account ID in logs
+        run: echo "::add-mask::$(aws sts get-caller-identity --query Account --output text)"
+
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
@@ -138,6 +143,11 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # Public repo, public logs: redact the account ID everywhere downstream, so
+      # ARNs and bucket names (e.g. kyleos-site-<id>) print as kyleos-site-***.
+      - name: Mask AWS account ID in logs
+        run: echo "::add-mask::$(aws sts get-caller-identity --query Account --output text)"
+
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
@@ -172,10 +182,7 @@ jobs:
       # committed, never baked into the bundle. (ADR-006)
       - name: Generate config.json
         working-directory: infra
-        run: |
-          terraform output -json runtime_config > ../dist/config.json
-          echo "--- config.json ---"
-          cat ../dist/config.json
+        run: terraform output -json runtime_config > ../dist/config.json
 
       # Hashed assets cache forever. index.html, config.json, content.json never do.
       - name: Sync hashed assets
