@@ -103,8 +103,11 @@
               "glyph": {
                 "type": "string"
               },
-              "tagstr": {
-                "type": "string"
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               },
               "desc": {
                 "type": "string"
@@ -123,7 +126,7 @@
               "id",
               "name",
               "glyph",
-              "tagstr",
+              "tags",
               "desc",
               "repo",
               "live"

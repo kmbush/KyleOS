@@ -20,7 +20,7 @@ export interface Content {
     id: string;
     name: string;
     glyph: string; // single unicode char — desktop icon, dock, spotlight
-    tagstr: string; // "Go · CDK · Policy-as-Code" — split on '·' into pills
+    tags: string[]; // e.g. ["Go", "CDK", "Policy-as-Code"] — rendered as pills
     desc: string;
     repo: string; // '' hides the "code ↗" link
     live: string; // '' hides the "live ↗" link

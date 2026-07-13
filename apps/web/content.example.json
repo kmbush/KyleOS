@@ -19,10 +19,26 @@
       }
     ],
     "facts": [
-      { "id": "f1", "label": "Based in", "value": "Seattle, WA" },
-      { "id": "f2", "label": "Focus", "value": "Cloud architecture" },
-      { "id": "f3", "label": "Languages", "value": "Go, Python, TS" },
-      { "id": "f4", "label": "Currently", "value": "WA reviews" }
+      {
+        "id": "f1",
+        "label": "Based in",
+        "value": "Seattle, WA"
+      },
+      {
+        "id": "f2",
+        "label": "Focus",
+        "value": "Cloud architecture"
+      },
+      {
+        "id": "f3",
+        "label": "Languages",
+        "value": "Go, Python, TS"
+      },
+      {
+        "id": "f4",
+        "label": "Currently",
+        "value": "WA reviews"
+      }
     ]
   },
   "projects": [
@@ -30,7 +46,7 @@
       "id": "p1",
       "name": "Cedar",
       "glyph": "⌘",
-      "tagstr": "Go · CDK · Policy-as-Code",
+      "tags": ["Go", "CDK", "Policy-as-Code"],
       "desc": "A policy engine that lints CloudFormation & CDK against the Well-Architected pillars before anything deploys. Cedar turns tribal architecture knowledge into automated guardrails so teams catch cost, security, and reliability foot-guns in CI instead of in production.",
       "repo": "https://github.com/",
       "live": ""
@@ -39,7 +55,7 @@
       "id": "p2",
       "name": "Fogline",
       "glyph": "◒",
-      "tagstr": "TypeScript · Lambda · DynamoDB",
+      "tags": ["TypeScript", "Lambda", "DynamoDB"],
       "desc": "A serverless status-page generator with edge caching and zero cold-start on the read path. Built to stay up when everything else is down — the read path never touches a cold Lambda.",
       "repo": "https://github.com/",
       "live": "https://example.com"
@@ -48,7 +64,7 @@
       "id": "p3",
       "name": "driftwood",
       "glyph": "≈",
-      "tagstr": "Rust · WASM",
+      "tags": ["Rust", "WASM"],
       "desc": "A tiny CRDT library for offline-first apps, compiled to WASM and under 12kb gzipped. Conflict-free sync without dragging in a megabyte of dependencies.",
       "repo": "https://github.com/",
       "live": ""
@@ -57,7 +73,7 @@
       "id": "p4",
       "name": "Trailhead CLI",
       "glyph": "⌸",
-      "tagstr": "Python · Click",
+      "tags": ["Python", "Click"],
       "desc": "A developer CLI that scaffolds a production-ready AWS account baseline — org structure, guardrails, logging, and identity — in one command.",
       "repo": "https://github.com/",
       "live": ""
@@ -66,7 +82,7 @@
       "id": "p5",
       "name": "KyleOS",
       "glyph": "■",
-      "tagstr": "Design · Frontend",
+      "tags": ["Design", "Frontend"],
       "desc": "The desktop you are using right now. A portfolio reimagined as a tiny operating system, with draggable windows, a live dock, and a working menu bar.",
       "repo": "https://github.com/",
       "live": ""
@@ -96,16 +112,52 @@
     }
   ],
   "certs": [
-    { "id": "c1", "name": "Solutions Architect – Pro", "issuer": "AWS", "year": "2025" },
-    { "id": "c2", "name": "DevOps Engineer – Pro", "issuer": "AWS", "year": "2024" },
-    { "id": "c3", "name": "Security – Specialty", "issuer": "AWS", "year": "2024" },
-    { "id": "c4", "name": "Kubernetes Admin", "issuer": "CNCF", "year": "2023" }
+    {
+      "id": "c1",
+      "name": "Solutions Architect – Pro",
+      "issuer": "AWS",
+      "year": "2025"
+    },
+    {
+      "id": "c2",
+      "name": "DevOps Engineer – Pro",
+      "issuer": "AWS",
+      "year": "2024"
+    },
+    {
+      "id": "c3",
+      "name": "Security – Specialty",
+      "issuer": "AWS",
+      "year": "2024"
+    },
+    {
+      "id": "c4",
+      "name": "Kubernetes Admin",
+      "issuer": "CNCF",
+      "year": "2023"
+    }
   ],
   "hobbies": [
-    { "id": "h1", "name": "Backpacking", "note": "Alpine lakes and Cascade ridgelines." },
-    { "id": "h2", "name": "Film photography", "note": "35mm, mostly fog and cedar." },
-    { "id": "h3", "name": "Coffee", "note": "Pour-over pedantry." },
-    { "id": "h4", "name": "Woodworking", "note": "Things I can touch." }
+    {
+      "id": "h1",
+      "name": "Backpacking",
+      "note": "Alpine lakes and Cascade ridgelines."
+    },
+    {
+      "id": "h2",
+      "name": "Film photography",
+      "note": "35mm, mostly fog and cedar."
+    },
+    {
+      "id": "h3",
+      "name": "Coffee",
+      "note": "Pour-over pedantry."
+    },
+    {
+      "id": "h4",
+      "name": "Woodworking",
+      "note": "Things I can touch."
+    }
   ],
   "contact": {
     "note": "Let’s build something that lasts.",

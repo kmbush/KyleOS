@@ -196,6 +196,57 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
   );
 }
 
+// Tag editor: type a tag and press Enter or comma to add it as a chip; Backspace on
+// an empty input removes the last one. Replaces the old '·'-separated text field —
+// no special character to hunt for. Duplicates are dropped; a pending draft commits
+// on blur so a half-typed tag is never lost to autosave.
+function TagsInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[]) => void }) {
+  const [draft, setDraft] = useState("");
+  const add = (raw: string) => {
+    const fresh = raw
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t && !tags.includes(t));
+    if (fresh.length) onChange([...tags, ...fresh]);
+    setDraft("");
+  };
+  return (
+    <div className="field flex flex-wrap items-center gap-[6px]">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className="flex items-center gap-1 rounded-md border border-line px-[7px] py-[2px] font-mono text-[11px] text-fg-dim"
+        >
+          {tag}
+          <button
+            type="button"
+            title={`Remove ${tag}`}
+            onClick={() => onChange(tags.filter((t) => t !== tag))}
+            className="text-fg-faint"
+          >
+            ×
+          </button>
+        </span>
+      ))}
+      <input
+        className="min-w-[70px] flex-1 bg-transparent text-[13px] text-fg outline-none placeholder:text-fg-faint"
+        placeholder={tags.length ? "" : "Add tags — Enter or comma"}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+            add(draft);
+          } else if (e.key === "Backspace" && !draft && tags.length) {
+            onChange(tags.slice(0, -1));
+          }
+        }}
+        onBlur={() => add(draft)}
+      />
+    </div>
+  );
+}
+
 // --- Section forms ---------------------------------------------------------
 
 function ProfileForm({ content, commit }: FormProps) {
@@ -286,10 +337,7 @@ function WorkForm({ content, commit }: FormProps) {
       <ListHeader
         label="Projects · open as desktop files"
         onAdd={() =>
-          set([
-            ...list,
-            { id: uid(), name: "", glyph: "", tagstr: "", desc: "", repo: "", live: "" },
-          ])
+          set([...list, { id: uid(), name: "", glyph: "", tags: [], desc: "", repo: "", live: "" }])
         }
       />
       {list.map((p, i) => (
@@ -303,19 +351,14 @@ function WorkForm({ content, commit }: FormProps) {
             />
             <RemoveButton onClick={() => set(removeAt(list, i))} />
           </div>
-          <div className="grid grid-cols-[70px_1fr] gap-2">
+          <div className="grid grid-cols-[70px_1fr] items-start gap-2">
             <input
               className="field text-center"
               placeholder="icon"
               value={p.glyph}
               onChange={(e) => set(replaceAt(list, i, { glyph: e.target.value }))}
             />
-            <input
-              className="field"
-              placeholder="Tags (dot-separated)"
-              value={p.tagstr}
-              onChange={(e) => set(replaceAt(list, i, { tagstr: e.target.value }))}
-            />
+            <TagsInput tags={p.tags} onChange={(tags) => set(replaceAt(list, i, { tags }))} />
           </div>
           <textarea
             className="field"

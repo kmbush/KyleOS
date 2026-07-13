@@ -8,11 +8,6 @@ export function Work({ projectId }: { projectId: string }) {
   const project = useContent().projects.find((p) => p.id === projectId);
   if (!project) return null;
 
-  const tags = project.tagstr
-    .split("·")
-    .map((t) => t.trim())
-    .filter(Boolean);
-
   return (
     <>
       <div className="mb-[14px] flex flex-wrap items-baseline justify-between gap-3">
@@ -34,7 +29,7 @@ export function Work({ projectId }: { projectId: string }) {
       </div>
 
       <div className="mb-4 flex flex-wrap gap-[7px]">
-        {tags.map((tag) => (
+        {project.tags.map((tag) => (
           <span
             key={tag}
             className="rounded-md border border-line px-[9px] py-[3px] font-mono text-[11px] text-fg-dim"
