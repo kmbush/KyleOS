@@ -1,4 +1,5 @@
-import { expect, type Locator, type Page, test } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 // The desktop boots, auto-opens Help, and every window interaction works.
 test.beforeEach(async ({ page }) => {
@@ -19,13 +20,6 @@ async function box(locator: Locator) {
   const b = await locator.boundingBox();
   if (!b) throw new Error("element has no bounding box");
   return b;
-}
-
-// Windows open with a `winIn` transform: scale() pop, so boundingBox() reports a
-// mid-animation (scaled-down) size until it finishes. Await it before measuring
-// geometry, or the settled size won't match. Resolves instantly if none running.
-async function settle(locator: Locator): Promise<void> {
-  await locator.evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)));
 }
 
 test("boots and auto-opens Help", async ({ page }) => {
@@ -69,7 +63,6 @@ test("minimizes to a dock pill and restores", async ({ page }) => {
 test("drags a window by its title bar", async ({ page }) => {
   await page.getByText("About", { exact: true }).click();
   const win = windowEl(page, "about");
-  await settle(win);
   const before = await box(win);
 
   await page.mouse.move(before.x + 120, before.y + 8);
@@ -111,7 +104,6 @@ test("Spotlight closes on Escape", async ({ page }) => {
 test("maximizes a window to fill the viewport and restores", async ({ page }) => {
   await page.getByText("About", { exact: true }).click();
   const win = windowEl(page, "about");
-  await settle(win);
   const before = await box(win);
 
   await win.getByTitle("maximize").click();
