@@ -67,6 +67,21 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "images" {
   }
 }
 
+# The editor uploads screenshots with a presigned PUT straight from the browser — a
+# cross-origin request that S3 must be told to allow, or the preflight fails and the
+# upload dies with a bare "NetworkError". Scope it to the site origin(s) and the one
+# method/header the client actually sends (PUT + Content-Type). Reads go through
+# CloudFront (same origin), so no GET rule is needed here.
+resource "aws_s3_bucket_cors_configuration" "images" {
+  bucket = aws_s3_bucket.images.id
+  cors_rule {
+    allowed_methods = ["PUT"]
+    allowed_origins = local.allowed_origins
+    allowed_headers = ["Content-Type"]
+    max_age_seconds = 3000
+  }
+}
+
 # OAC bucket policies: only the CloudFront distribution may read, and only this one.
 data "aws_iam_policy_document" "site_oac" {
   statement {
