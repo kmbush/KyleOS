@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "test": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "e2e:serve": "node scripts/ensure-config.mjs && vite build && vite preview --port 4173 --strictPort"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.2",

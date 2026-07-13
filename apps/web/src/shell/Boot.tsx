@@ -1,12 +1,17 @@
 // The boot overlay: a moss "K" tile, a caption, and a bar that fills over 1.4s.
 // It dismisses after 1500ms (DESIGN §5) and calls onDone.
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export function Boot({ onDone }: { onDone: () => void }) {
+  // Fire exactly once, 1500ms after mount. onDone is a fresh closure every parent
+  // render, so a [onDone] dependency would restart the timer on every re-render;
+  // a ref lets the single timer call the latest callback without resetting.
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
   useEffect(() => {
-    const id = setTimeout(onDone, 1500);
+    const id = setTimeout(() => onDoneRef.current(), 1500);
     return () => clearTimeout(id);
-  }, [onDone]);
+  }, []);
 
   return (
     <div
