@@ -115,3 +115,19 @@ test("maximizes a window to fill the viewport and restores", async ({ page }) =>
   const restored = await box(win);
   expect(Math.round(restored.width)).toBe(Math.round(before.width));
 });
+
+test("resizes a window by dragging the right edge", async ({ page }) => {
+  await page.getByText("About", { exact: true }).click();
+  const win = windowEl(page, "about");
+  const before = await box(win);
+
+  // Grab the right-edge grip at mid-height (clear of the rounded corners) and widen.
+  await page.mouse.move(before.x + before.width - 3, before.y + before.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(before.x + before.width + 90, before.y + before.height / 2, { steps: 5 });
+  await page.mouse.up();
+
+  const after = await box(win);
+  expect(after.width).toBeGreaterThan(before.width + 70);
+  expect(Math.round(after.height)).toBe(Math.round(before.height)); // right edge: height unchanged
+});

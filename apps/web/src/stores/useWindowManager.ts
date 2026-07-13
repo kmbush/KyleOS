@@ -8,6 +8,10 @@ const TOP_LIMIT = 40;
 const ICON_TOP_LIMIT = 42;
 const BASE_Z = 10;
 
+/** Smallest a window may be resized to. */
+const MIN_W = 280;
+const MIN_H = 180;
+
 export interface DesktopWindow {
   id: string; // also the app key the shell renders
   title: string;
@@ -38,6 +42,7 @@ interface WindowManager {
   restore: (id: string) => void;
   toggleMax: (id: string) => void;
   move: (id: string, x: number, y: number) => void;
+  resize: (id: string, w: number, h: number) => void;
   moveIcon: (id: string, x: number, y: number) => void;
   resetDesktop: () => void;
 }
@@ -119,6 +124,13 @@ export const useWindowManager = create<WindowManager>((set) => ({
   move: (id, x, y) =>
     set((s) => ({
       windows: s.windows.map((w) => (w.id === id ? { ...w, x, y: Math.max(TOP_LIMIT, y) } : w)),
+    })),
+
+  resize: (id, w, h) =>
+    set((s) => ({
+      windows: s.windows.map((win) =>
+        win.id === id ? { ...win, w: Math.max(MIN_W, w), h: Math.max(MIN_H, h) } : win,
+      ),
     })),
 
   moveIcon: (id, x, y) =>
