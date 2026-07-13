@@ -77,6 +77,14 @@ jobs:
     needs: verify
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    # Terraform inputs (ADR-006): env-specific values live only in GitHub
+    # secrets/vars + Actions context, injected as TF_VAR_* — never committed.
+    env:
+      TF_VAR_region: ${{ vars.AWS_REGION }}
+      TF_VAR_tf_state_bucket: ${{ secrets.TF_STATE_BUCKET }}
+      TF_VAR_github_repo: ${{ github.repository }}
+      TF_VAR_contact_sender_email: ${{ secrets.CONTACT_SENDER_EMAIL }}
+      TF_VAR_contact_recipient_email: ${{ secrets.CONTACT_RECIPIENT_EMAIL }}
     steps:
       - uses: actions/checkout@v4
 
@@ -114,6 +122,14 @@ jobs:
     concurrency:
       group: production
       cancel-in-progress: false
+    # Terraform inputs (ADR-006): env-specific values live only in GitHub
+    # secrets/vars + Actions context, injected as TF_VAR_* — never committed.
+    env:
+      TF_VAR_region: ${{ vars.AWS_REGION }}
+      TF_VAR_tf_state_bucket: ${{ secrets.TF_STATE_BUCKET }}
+      TF_VAR_github_repo: ${{ github.repository }}
+      TF_VAR_contact_sender_email: ${{ secrets.CONTACT_SENDER_EMAIL }}
+      TF_VAR_contact_recipient_email: ${{ secrets.CONTACT_RECIPIENT_EMAIL }}
     steps:
       - uses: actions/checkout@v4
 
