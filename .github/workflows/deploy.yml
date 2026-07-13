@@ -77,10 +77,13 @@ jobs:
   plan:
     name: Terraform plan
     needs: verify
-    # Same-repo PRs only: fork PRs get no secrets and would just red-X at auth.
+    # Same-repo, non-Dependabot PRs only. Fork and Dependabot PRs run without
+    # secrets by design, so this privileged job would just red-X at auth — and an
+    # action-bump PR doesn't change Terraform anyway; `verify` still covers it.
     if: >-
       github.event_name == 'pull_request' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     # Terraform inputs (ADR-006): env-specific values live only in GitHub
     # secrets/vars + Actions context, injected as TF_VAR_* — never committed.
