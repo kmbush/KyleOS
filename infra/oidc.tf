@@ -8,13 +8,10 @@
 # are. It is scoped by *service*, and by resource/name prefix where that is practical
 # (state bucket, project-prefixed buckets and roles) — never a bare Action:"*".
 
-# The provider already exists in Kyle's account, so reference it (create = false). A
-# fresh forker without it sets create_github_oidc_provider = true to create it here.
-data "aws_iam_openid_connect_provider" "github" {
-  count = var.create_github_oidc_provider ? 0 : 1
-  url   = "https://token.actions.githubusercontent.com"
-}
-
+# A fresh forker without the provider sets create_github_oidc_provider = true to create
+# it here; an account that already has it (Kyle) references it by its constructed ARN
+# (see locals) — never a data-source lookup, which would force iam:ListOpenIDConnectProviders
+# (an unscopable wildcard) onto the least-privileged deploy role.
 resource "aws_iam_openid_connect_provider" "github" {
   count = var.create_github_oidc_provider ? 1 : 0
   url   = "https://token.actions.githubusercontent.com"
@@ -35,7 +32,10 @@ locals {
   partition  = data.aws_partition.current.partition
   account_id = data.aws_caller_identity.current.account_id
 
-  oidc_provider_arn = var.create_github_oidc_provider ? aws_iam_openid_connect_provider.github[0].arn : data.aws_iam_openid_connect_provider.github[0].arn
+  # When we create the provider, read the ARN back from the resource; otherwise construct
+  # it. The provider URL is fixed, so the ARN is fully determined by partition + account —
+  # no lookup, no iam:ListOpenIDConnectProviders on the deploy role.
+  oidc_provider_arn = var.create_github_oidc_provider ? aws_iam_openid_connect_provider.github[0].arn : "arn:${local.partition}:iam::${local.account_id}:oidc-provider/token.actions.githubusercontent.com"
 
   # ARNs are built from partition/account attributes (never a hardcoded ARN prefix), so
   # the repo stays forkable and no account value is committed (ADR-006).
@@ -144,7 +144,8 @@ data "aws_iam_policy_document" "deploy" {
     resources = [local.stack_role_arn]
   }
 
-  # The GitHub OIDC provider: read it (data source) and, for a fresh forker, manage it.
+  # The GitHub OIDC provider: manage it for a fresh forker (create = true). An account
+  # that already has it references it by constructed ARN, so no read is needed there.
   statement {
     sid = "OidcProvider"
     actions = [
