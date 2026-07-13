@@ -89,6 +89,13 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # archive_file is read at plan time, so build the package before init/plan.
+      - run: bash scripts/package-lambdas.sh
+
       # State backend config is passed in, never committed. (ADR-006)
       - name: Plan
         working-directory: infra
@@ -118,6 +125,13 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # archive_file is read at apply time, so build the package before init/apply.
+      - run: bash scripts/package-lambdas.sh
 
       - name: Terraform apply
         id: tf

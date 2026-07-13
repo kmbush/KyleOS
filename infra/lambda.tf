@@ -4,37 +4,17 @@
 # function gets a role scoped to exactly the resources it touches (PHASE3 §7).
 
 locals {
-  api_dir     = "${local.repo_root}/services/api"
-  schema_json = "${local.repo_root}/apps/web/src/lib/schema.json"
-  build_dir   = "${path.module}/build"
+  api_dir   = "${local.repo_root}/services/api"
+  build_dir = "${path.module}/build"
 }
 
-# Vendor fastjsonschema and copy the handler + shared schema into a build dir. Pure
-# Python, so no --platform needed for arm64. Reruns when any input changes.
-resource "null_resource" "put_content_build" {
-  triggers = {
-    handler      = filesha256("${local.api_dir}/put_content/handler.py")
-    requirements = filesha256("${local.api_dir}/put_content/requirements.txt")
-    schema       = filesha256(local.schema_json)
-  }
-
-  provisioner "local-exec" {
-    interpreter = ["bash", "-c"]
-    command     = <<-EOT
-      set -euo pipefail
-      rm -rf "${local.build_dir}/put_content"
-      mkdir -p "${local.build_dir}/put_content"
-      python3 -m pip install \
-        --target "${local.build_dir}/put_content" \
-        -r "${local.api_dir}/put_content/requirements.txt"
-      cp "${local.api_dir}/put_content/handler.py" "${local.build_dir}/put_content/"
-      cp "${local.schema_json}" "${local.build_dir}/put_content/"
-    EOT
-  }
-}
-
+# put_content's package (handler + shared schema.json + vendored fastjsonschema) is
+# built OUTSIDE Terraform by scripts/package-lambdas.sh, which CI and a manual apply run
+# before init/plan/apply. Building it here via null_resource would fail on a fresh
+# checkout: the archive is read at plan time but the trigger-based build won't re-run
+# when hashes are unchanged, so the directory would be missing. The build dir is
+# gitignored; the script recreates it.
 data "archive_file" "put_content" {
-  depends_on  = [null_resource.put_content_build]
   type        = "zip"
   source_dir  = "${local.build_dir}/put_content"
   output_path = "${local.build_dir}/put_content.zip"

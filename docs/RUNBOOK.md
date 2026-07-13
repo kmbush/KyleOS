@@ -22,6 +22,9 @@ Until CI takes over (Phase 5), ship a new build by hand. `config.json` is
 generated from Terraform outputs — never committed (ADR-006); `content.json` is
 never synced — it is owned by the editor (ADR-002).
 
+**Before any `terraform apply`, run `bash scripts/package-lambdas.sh`** — it builds the
+`put_content` Lambda package that Terraform zips (the build dir is gitignored).
+
 ```bash
 cd apps/web && npm run build
 terraform -chdir=../infra output -json runtime_config > dist/config.json
