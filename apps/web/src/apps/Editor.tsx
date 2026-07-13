@@ -476,6 +476,12 @@ function CertsForm({ content, commit }: FormProps) {
               onChange={(e) => set(replaceAt(list, i, { year: e.target.value }))}
             />
           </div>
+          <ImageDrop
+            value={ct.image}
+            onChange={(image) => set(replaceAt(list, i, { image }))}
+            label="badge"
+            contain
+          />
         </div>
       ))}
     </>
@@ -551,9 +557,13 @@ function ContactForm({ content, commit }: FormProps) {
 function ImageDrop({
   value,
   onChange,
+  label = "screenshot",
+  contain = false,
 }: {
   value?: string;
   onChange: (key: string | undefined) => void;
+  label?: string;
+  contain?: boolean;
 }) {
   const jwt = useAuth((s) => s.jwt);
   const [busy, setBusy] = useState(false);
@@ -592,10 +602,14 @@ function ImageDrop({
         className="grid size-full place-items-center"
       >
         {value ? (
-          <img src={imageUrl(value)} alt="Project screenshot" className="size-full object-cover" />
+          <img
+            src={imageUrl(value)}
+            alt={label}
+            className={`size-full ${contain ? "object-contain" : "object-cover"}`}
+          />
         ) : (
           <span className="font-mono text-xs text-fg-faint">
-            {busy ? "uploading…" : "drop a screenshot"}
+            {busy ? "uploading…" : `drop a ${label}`}
           </span>
         )}
       </button>

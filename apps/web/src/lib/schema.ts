@@ -29,7 +29,7 @@ export interface Content {
     image?: string; // S3 key for the 16:10 screenshot slot
   }>;
   publications: Array<{ id: string; title: string; outlet: string; date: string; url: string }>;
-  certs: Array<{ id: string; name: string; issuer: string; year: string }>;
+  certs: Array<{ id: string; name: string; issuer: string; year: string; image?: string }>; // image: S3 key of the credential badge
   hobbies: Array<{ id: string; name: string; note: string }>;
   contact: {
     note: string;
