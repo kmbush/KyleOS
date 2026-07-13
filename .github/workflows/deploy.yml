@@ -61,21 +61,26 @@ jobs:
 
       - run: npm run build
 
-      - name: E2E
-        run: |
-          npx playwright install --with-deps chromium
-          npm run test:e2e
-
+      # Upload the clean production build BEFORE E2E runs — e2e:serve rebuilds dist
+      # with example config/content seeded in, which must not become the deploy artifact.
       - uses: actions/upload-artifact@v4
         with:
           name: web-dist
           path: apps/web/dist
           retention-days: 1
 
+      - name: E2E
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+
   plan:
     name: Terraform plan
     needs: verify
-    if: github.event_name == 'pull_request'
+    # Same-repo PRs only: fork PRs get no secrets and would just red-X at auth.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     # Terraform inputs (ADR-006): env-specific values live only in GitHub
     # secrets/vars + Actions context, injected as TF_VAR_* — never committed.
@@ -168,9 +173,14 @@ jobs:
             -backend-config="key=kyleos/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}"
           terraform apply -auto-approve
+          bucket=$(terraform output -raw site_bucket)
+          distribution=$(terraform output -raw cloudfront_id)
+          # Distribution IDs aren't account-derived, so the account-ID mask misses them;
+          # mask it so it stays out of the invalidation command lines in the log.
+          echo "::add-mask::$distribution"
           {
-            echo "bucket=$(terraform output -raw site_bucket)"
-            echo "distribution=$(terraform output -raw cloudfront_id)"
+            echo "bucket=$bucket"
+            echo "distribution=$distribution"
           } >> "$GITHUB_OUTPUT"
 
       - uses: actions/download-artifact@v4
