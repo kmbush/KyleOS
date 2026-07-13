@@ -213,12 +213,6 @@ function ProfileForm({ content, commit }: FormProps) {
         onChange={(v) => set({ timezone: v })}
       />
       <Field
-        label="Tagline (README window)"
-        value={hero.tagline}
-        onChange={(v) => set({ tagline: v })}
-        multiline
-      />
-      <Field
         label="Sticky-note bio"
         value={hero.sticky}
         onChange={(v) => set({ sticky: v })}

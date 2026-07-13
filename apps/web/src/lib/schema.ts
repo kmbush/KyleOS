@@ -9,7 +9,6 @@ export interface Content {
     role: string;
     location: string;
     timezone: string; // IANA name (e.g. "America/Los_Angeles") — drives the desktop clock
-    tagline: string;
     sticky: string; // sticky-note bio, bottom-left
   };
   about: {
