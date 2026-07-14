@@ -6,6 +6,7 @@ import { accentAt } from "../../lib/accents";
 import { type AppDef, projectApp, SNAKE } from "../../lib/apps";
 import { startDrag } from "../../lib/drag";
 import { useContent } from "../../lib/useContent";
+import { useGlyph } from "../../lib/useGlyphs";
 import { useWindowManager } from "../../stores/useWindowManager";
 
 function defaultPos(index: number) {
@@ -13,7 +14,6 @@ function defaultPos(index: number) {
 }
 
 interface Icon {
-  glyph: string;
   label: string;
   accent: string;
   app: AppDef;
@@ -24,20 +24,20 @@ export function DesktopIcons() {
   const iconPos = useWindowManager((s) => s.iconPos);
   const moveIcon = useWindowManager((s) => s.moveIcon);
   const open = useWindowManager((s) => s.open);
+  const glyphOf = useGlyph();
 
   const icons: Icon[] = [
     ...projects.map((project, i) => ({
-      glyph: project.glyph,
       label: project.name,
       accent: accentAt(i),
       app: projectApp(project, i),
     })),
-    { glyph: SNAKE.glyph, label: SNAKE.dockLabel, accent: SNAKE.accent, app: SNAKE },
+    { label: SNAKE.dockLabel, accent: SNAKE.accent, app: SNAKE },
   ];
 
   return (
     <>
-      {icons.map(({ glyph, label, accent, app }, i) => {
+      {icons.map(({ label, accent, app }, i) => {
         const pos = iconPos[app.id] ?? defaultPos(i);
         return (
           <button
@@ -60,7 +60,7 @@ export function DesktopIcons() {
                 style={{ background: accent }}
               />
               <span className="font-mono text-[22px]" style={{ color: accent }}>
-                {glyph}
+                {glyphOf(app)}
               </span>
             </span>
             <span

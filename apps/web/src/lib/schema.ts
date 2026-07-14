@@ -38,4 +38,8 @@ export interface Content {
     linkedin: string;
     blog: string;
   };
+  // Icon (glyph) overrides for built-in apps, keyed by app id (e.g. "about",
+  // "snake"). Missing keys fall back to the app's built-in default. Project icons
+  // are edited per-project (projects[].glyph), not here.
+  icons?: Record<string, string>;
 }

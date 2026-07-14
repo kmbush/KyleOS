@@ -105,6 +105,10 @@ export const SNAKE: AppDef = {
   size: { w: 340, h: 420 },
 };
 
+// Built-in apps whose icon the owner can override in the editor (Icons section).
+// Project icons are edited per-project in Work, so they are not listed here.
+export const ICON_APPS: AppDef[] = [...SECTIONS, HELP, SNAKE];
+
 /** The app for a project, keyed `proj:<id>`, its accent cycling by list index. */
 export function projectApp(
   project: { id: string; name: string; glyph: string },

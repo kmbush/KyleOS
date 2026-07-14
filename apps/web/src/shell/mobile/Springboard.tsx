@@ -2,10 +2,12 @@
 // above the app bar, and a floating bottom dock of the five fixed section apps.
 import { type AppDef, HELP, projectApp, SECTIONS } from "../../lib/apps";
 import { useContent } from "../../lib/useContent";
+import { useGlyph } from "../../lib/useGlyphs";
 
 export function Springboard({ onOpen }: { onOpen: (app: AppDef) => void }) {
   const { projects } = useContent();
   const grid: AppDef[] = [...projects.map((p, i) => projectApp(p, i)), HELP];
+  const glyphOf = useGlyph();
 
   return (
     <div className="absolute inset-x-0 top-10 bottom-0 z-[1] flex flex-col">
@@ -43,7 +45,7 @@ export function Springboard({ onOpen }: { onOpen: (app: AppDef) => void }) {
                   boxShadow: "0 10px 22px -10px rgba(0, 0, 0, 0.5)",
                 }}
               >
-                {app.glyph}
+                {glyphOf(app)}
               </span>
               <span
                 className="max-w-[76px] text-center text-[11px] leading-[1.2]"
@@ -67,7 +69,7 @@ export function Springboard({ onOpen }: { onOpen: (app: AppDef) => void }) {
                 className="grid size-[56px] place-items-center rounded-[15px] font-mono text-2xl text-ink"
                 style={{ background: app.accent, boxShadow: "0 8px 18px -8px rgba(0, 0, 0, 0.5)" }}
               >
-                {app.glyph}
+                {glyphOf(app)}
               </span>
             </button>
           ))}

@@ -253,6 +253,12 @@
             "blog"
           ],
           "additionalProperties": false
+        },
+        "icons": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       },
       "required": [

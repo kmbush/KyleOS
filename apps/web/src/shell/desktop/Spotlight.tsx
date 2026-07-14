@@ -5,6 +5,7 @@ import { HELP, projectApp, SECTIONS, SNAKE } from "../../lib/apps";
 import { MOD_KEY } from "../../lib/platform";
 import { filterSearch } from "../../lib/search";
 import { useContent } from "../../lib/useContent";
+import { useGlyph } from "../../lib/useGlyphs";
 import { useTheme } from "../../stores/useTheme";
 import { useWindowManager } from "../../stores/useWindowManager";
 
@@ -20,12 +21,13 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
   const { projects } = useContent();
   const open = useWindowManager((s) => s.open);
   const toggleTheme = useTheme((s) => s.toggle);
+  const glyphOf = useGlyph();
 
   const items = useMemo<SpotlightItem[]>(() => {
     const sections = SECTIONS.map((s) => ({
       label: s.searchLabel,
       kind: "section",
-      glyph: s.glyph,
+      glyph: glyphOf(s),
       tint: s.accent,
       run: () => open(s.id, s.windowTitle, s.size),
     }));
@@ -34,7 +36,7 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
       return {
         label: p.name,
         kind: "project",
-        glyph: app.glyph,
+        glyph: glyphOf(app),
         tint: app.accent,
         run: () => open(app.id, app.windowTitle, app.size),
       };
@@ -52,19 +54,19 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
       {
         label: HELP.searchLabel,
         kind: "guide",
-        glyph: HELP.glyph,
+        glyph: glyphOf(HELP),
         tint: HELP.accent,
         run: () => open(HELP.id, HELP.windowTitle, HELP.size),
       },
       {
         label: SNAKE.searchLabel,
         kind: "game",
-        glyph: SNAKE.glyph,
+        glyph: glyphOf(SNAKE),
         tint: SNAKE.accent,
         run: () => open(SNAKE.id, SNAKE.windowTitle, SNAKE.size),
       },
     ];
-  }, [projects, open, toggleTheme]);
+  }, [projects, open, toggleTheme, glyphOf]);
 
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);

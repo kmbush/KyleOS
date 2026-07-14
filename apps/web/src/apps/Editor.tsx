@@ -11,6 +11,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { imageUrl, uploadImage } from "../lib/api";
+import { ICON_APPS } from "../lib/apps";
 import type { Content } from "../lib/schema";
 import { contentQuery, useContent, useSaveContent } from "../lib/useContent";
 import { useAuth } from "../stores/useAuth";
@@ -25,6 +26,7 @@ const SECTIONS = [
   { id: "certs", label: "Certs" },
   { id: "life", label: "Life" },
   { id: "contact", label: "Contact" },
+  { id: "icons", label: "Icons" },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -113,6 +115,7 @@ export function Editor() {
         {section === "certs" && <CertsForm content={content} commit={commit} />}
         {section === "life" && <LifeForm content={content} commit={commit} />}
         {section === "contact" && <ContactForm content={content} commit={commit} />}
+        {section === "icons" && <IconsForm content={content} commit={commit} />}
       </div>
     </div>
   );
@@ -548,6 +551,45 @@ function ContactForm({ content, commit }: FormProps) {
         onChange={(v) => set({ linkedin: v })}
       />
       <Field label="Blog URL" type="url" value={contact.blog} onChange={(v) => set({ blog: v })} />
+    </div>
+  );
+}
+
+// Override the icon of any built-in app. Blank falls back to the app's default;
+// project icons live per-project in Work, so they aren't listed here.
+function IconsForm({ content, commit }: FormProps) {
+  const icons = content.icons ?? {};
+  const setIcon = (id: string, glyph: string) => {
+    const next = { ...icons };
+    if (glyph.trim()) next[id] = glyph;
+    else delete next[id];
+    commit({ ...content, icons: next });
+  };
+  return (
+    <div className="grid gap-3">
+      <p className="m-0 text-xs text-fg-dim">
+        Override any built-in app's icon. Leave blank for the default.
+      </p>
+      {ICON_APPS.map((app) => (
+        <div key={app.id} className="flex items-center gap-3">
+          <span
+            className="grid size-[38px] flex-none place-items-center rounded-[9px] border border-line font-mono text-lg"
+            style={{ color: app.accent }}
+          >
+            {icons[app.id] ?? app.glyph}
+          </span>
+          <label htmlFor={`icon-${app.id}`} className="flex-1 text-sm">
+            {app.dockLabel}
+          </label>
+          <input
+            id={`icon-${app.id}`}
+            className="field w-[84px] text-center"
+            value={icons[app.id] ?? ""}
+            placeholder={app.glyph}
+            onChange={(e) => setIcon(app.id, e.target.value)}
+          />
+        </div>
+      ))}
     </div>
   );
 }

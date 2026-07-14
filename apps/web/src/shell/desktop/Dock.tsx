@@ -1,6 +1,7 @@
 // The dock: the five section apps, each lifting on hover with an open-indicator
 // dot, and any minimized windows as pills after a divider.
 import { SECTIONS } from "../../lib/apps";
+import { useGlyph } from "../../lib/useGlyphs";
 import { useWindowManager } from "../../stores/useWindowManager";
 
 const LIFT =
@@ -10,6 +11,7 @@ export function Dock() {
   const windows = useWindowManager((s) => s.windows);
   const open = useWindowManager((s) => s.open);
   const restore = useWindowManager((s) => s.restore);
+  const glyphOf = useGlyph();
 
   const openIds = new Set(windows.map((w) => w.id));
   const minimized = windows.filter((w) => w.minimized);
@@ -33,7 +35,7 @@ export function Dock() {
             className="grid size-12 place-items-center rounded-[13px] font-mono text-xl text-ink"
             style={{ background: app.accent }}
           >
-            {app.glyph}
+            {glyphOf(app)}
           </span>
           <span className="font-mono text-[9.5px] tracking-[0.02em] text-fg-dim">
             {app.dockLabel}
