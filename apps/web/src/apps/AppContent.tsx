@@ -7,6 +7,7 @@ import { Editor } from "./Editor";
 import { Help } from "./Help";
 import { Info } from "./Info";
 import { Life } from "./Life";
+import { Snake } from "./Snake";
 import { Work } from "./Work";
 import { Writing } from "./Writing";
 
@@ -29,6 +30,8 @@ export function AppContent({ appId }: { appId: string }) {
       return <Info />;
     case "editor":
       return <Editor />;
+    case "snake":
+      return <Snake />;
     default:
       return null;
   }

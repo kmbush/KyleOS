@@ -131,3 +131,12 @@ test("resizes a window by dragging the right edge", async ({ page }) => {
   expect(after.width).toBeGreaterThan(before.width + 70);
   expect(Math.round(after.height)).toBe(Math.round(before.height)); // right edge: height unchanged
 });
+
+test("launches Snake from Spotlight", async ({ page }) => {
+  await page.keyboard.press("Control+k");
+  await page.getByPlaceholder("Search apps, projects, sections…").fill("snake");
+  await page.keyboard.press("Enter");
+  const win = windowEl(page, "snake");
+  await expect(win).toBeVisible();
+  await expect(win.getByText("score 0")).toBeVisible();
+});

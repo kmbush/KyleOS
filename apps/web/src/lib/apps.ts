@@ -94,6 +94,17 @@ export const INFO: AppDef = {
   size: { w: 400, h: 380 },
 };
 
+// A playable Snake game — a desktop icon and a Spotlight entry, not a portfolio section.
+export const SNAKE: AppDef = {
+  id: "snake",
+  windowTitle: "Snake",
+  dockLabel: "Snake",
+  searchLabel: "Snake",
+  glyph: "▦",
+  accent: "var(--glacier)",
+  size: { w: 340, h: 420 },
+};
+
 /** The app for a project, keyed `proj:<id>`, its accent cycling by list index. */
 export function projectApp(
   project: { id: string; name: string; glyph: string },

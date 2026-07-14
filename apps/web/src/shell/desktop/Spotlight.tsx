@@ -1,7 +1,7 @@
 // Spotlight: fuzzy-filter apps, projects, and actions; ↑/↓ move, Enter opens,
 // Esc closes, hover highlights. Opened with ⌘K / Ctrl+K or the menu-bar button.
 import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
-import { HELP, projectApp, SECTIONS } from "../../lib/apps";
+import { HELP, projectApp, SECTIONS, SNAKE } from "../../lib/apps";
 import { MOD_KEY } from "../../lib/platform";
 import { filterSearch } from "../../lib/search";
 import { useContent } from "../../lib/useContent";
@@ -55,6 +55,13 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
         glyph: HELP.glyph,
         tint: HELP.accent,
         run: () => open(HELP.id, HELP.windowTitle, HELP.size),
+      },
+      {
+        label: SNAKE.searchLabel,
+        kind: "game",
+        glyph: SNAKE.glyph,
+        tint: SNAKE.accent,
+        run: () => open(SNAKE.id, SNAKE.windowTitle, SNAKE.size),
       },
     ];
   }, [projects, open, toggleTheme]);
