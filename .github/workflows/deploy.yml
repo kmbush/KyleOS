@@ -93,6 +93,8 @@ jobs:
       TF_VAR_github_repo: ${{ github.repository }}
       TF_VAR_contact_sender_email: ${{ secrets.CONTACT_SENDER_EMAIL }}
       TF_VAR_contact_recipient_email: ${{ secrets.CONTACT_RECIPIENT_EMAIL }}
+      # Empty when unset, so a forker deploys CloudFront-URL-only until they set it.
+      TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -143,6 +145,8 @@ jobs:
       TF_VAR_github_repo: ${{ github.repository }}
       TF_VAR_contact_sender_email: ${{ secrets.CONTACT_SENDER_EMAIL }}
       TF_VAR_contact_recipient_email: ${{ secrets.CONTACT_RECIPIENT_EMAIL }}
+      # Empty when unset, so a forker deploys CloudFront-URL-only until they set it.
+      TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
