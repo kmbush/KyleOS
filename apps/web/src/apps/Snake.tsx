@@ -7,7 +7,7 @@ import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from "re
 const CELLS = 15; // board is CELLS × CELLS
 const CELL = 18; // px per cell
 const SIZE = CELLS * CELL;
-const TICK_MS = 130;
+const TICK_MS = 170; // gentle pace — it's an OS demo, not a reflex test
 const CENTER = Math.floor(CELLS / 2);
 
 type Point = { x: number; y: number };
@@ -24,6 +24,7 @@ function randomFood(snake: Point[]): Point {
 
 export function Snake() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   // Fast-changing game state lives in refs so the loop mutates it without a render.
   const snake = useRef<Point[]>([{ x: CENTER, y: CENTER }]);
@@ -35,6 +36,8 @@ export function Snake() {
   // Mirrored to state only for the score + overlay.
   const [score, setScore] = useState(0);
   const [uiStatus, setUiStatus] = useState<Status>("idle");
+  // Displayed board size (px). The canvas backing store stays SIZE and CSS-scales.
+  const [board, setBoard] = useState(SIZE);
   const setStatus = useCallback((s: Status) => {
     status.current = s;
     setUiStatus(s);
@@ -95,6 +98,18 @@ export function Snake() {
   // Focus the board on open so the keys work without a click.
   useEffect(() => canvasRef.current?.focus(), []);
 
+  // Grow/shrink the board to the largest square that fits the (resizeable) window.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => {
+      const { width, height } = el.getBoundingClientRect();
+      setBoard(Math.max(120, Math.floor(Math.min(width, height))));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const onKeyDown = (e: KeyboardEvent<HTMLCanvasElement>) => {
     const turn = (x: number, y: number) => {
       e.preventDefault();
@@ -122,38 +137,41 @@ export function Snake() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="flex w-full items-center justify-between font-mono text-xs text-fg-dim">
+    <div className="flex h-full flex-col gap-3">
+      <div className="flex items-center justify-between font-mono text-xs text-fg-dim">
         <span>score {score}</span>
         <span className="text-fg-faint">arrows / wasd</span>
       </div>
-      <div className="relative" style={{ width: SIZE, height: SIZE }}>
-        {/* The canvas holds focus so arrow/WASD keys reach the game only while it's
-            focused — never fighting the editor, Spotlight, or menu shortcuts. */}
-        <canvas
-          ref={canvasRef}
-          width={SIZE}
-          height={SIZE}
-          tabIndex={0}
-          onKeyDown={onKeyDown}
-          aria-label="Snake game board"
-          className="rounded-[10px] border border-line outline-none"
-        />
-        {uiStatus !== "playing" && (
-          <div
-            className="pointer-events-none absolute inset-0 grid place-items-center rounded-[10px] text-center font-mono"
-            style={{ background: "color-mix(in oklch, var(--bg) 55%, transparent)" }}
-          >
-            {uiStatus === "over" ? (
-              <div>
-                <div className="mb-1 text-sm text-fg">game over</div>
-                <div className="text-xs text-fg-dim">score {score} · press space</div>
-              </div>
-            ) : (
-              <div className="text-xs text-fg-dim">press space or an arrow to start</div>
-            )}
-          </div>
-        )}
+      <div ref={wrapRef} className="grid min-h-0 flex-1 place-items-center">
+        <div className="relative" style={{ width: board, height: board }}>
+          {/* The canvas holds focus so arrow/WASD keys reach the game only while it's
+              focused — never fighting the editor, Spotlight, or menu shortcuts. The
+              backing store is fixed (SIZE); CSS scales it to fill the resized window. */}
+          <canvas
+            ref={canvasRef}
+            width={SIZE}
+            height={SIZE}
+            tabIndex={0}
+            onKeyDown={onKeyDown}
+            aria-label="Snake game board"
+            className="size-full rounded-[10px] border border-line outline-none"
+          />
+          {uiStatus !== "playing" && (
+            <div
+              className="pointer-events-none absolute inset-0 grid place-items-center rounded-[10px] text-center font-mono"
+              style={{ background: "color-mix(in oklch, var(--bg) 55%, transparent)" }}
+            >
+              {uiStatus === "over" ? (
+                <div>
+                  <div className="mb-1 text-sm text-fg">game over</div>
+                  <div className="text-xs text-fg-dim">score {score} · press space</div>
+                </div>
+              ) : (
+                <div className="text-xs text-fg-dim">press space or an arrow to start</div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
