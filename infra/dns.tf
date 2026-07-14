@@ -38,12 +38,15 @@ resource "aws_acm_certificate_validation" "site" {
   validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
 }
 
-# Alias records for both the apex and www, IPv4 and IPv6.
+# Alias records for both the apex and www, IPv4 and IPv6. allow_overwrite lets the
+# stack take over an apex record that already points elsewhere (e.g. a prior site)
+# during a domain cutover, and makes re-applies idempotent.
 resource "aws_route53_record" "apex_a" {
-  count   = local.has_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.primary[0].zone_id
-  name    = var.domain_name
-  type    = "A"
+  count           = local.has_domain ? 1 : 0
+  zone_id         = data.aws_route53_zone.primary[0].zone_id
+  name            = var.domain_name
+  type            = "A"
+  allow_overwrite = true
 
   alias {
     name                   = aws_cloudfront_distribution.site.domain_name
@@ -53,10 +56,11 @@ resource "aws_route53_record" "apex_a" {
 }
 
 resource "aws_route53_record" "apex_aaaa" {
-  count   = local.has_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.primary[0].zone_id
-  name    = var.domain_name
-  type    = "AAAA"
+  count           = local.has_domain ? 1 : 0
+  zone_id         = data.aws_route53_zone.primary[0].zone_id
+  name            = var.domain_name
+  type            = "AAAA"
+  allow_overwrite = true
 
   alias {
     name                   = aws_cloudfront_distribution.site.domain_name
@@ -66,10 +70,11 @@ resource "aws_route53_record" "apex_aaaa" {
 }
 
 resource "aws_route53_record" "www_a" {
-  count   = local.has_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.primary[0].zone_id
-  name    = local.www_domain
-  type    = "A"
+  count           = local.has_domain ? 1 : 0
+  zone_id         = data.aws_route53_zone.primary[0].zone_id
+  name            = local.www_domain
+  type            = "A"
+  allow_overwrite = true
 
   alias {
     name                   = aws_cloudfront_distribution.site.domain_name
@@ -79,10 +84,11 @@ resource "aws_route53_record" "www_a" {
 }
 
 resource "aws_route53_record" "www_aaaa" {
-  count   = local.has_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.primary[0].zone_id
-  name    = local.www_domain
-  type    = "AAAA"
+  count           = local.has_domain ? 1 : 0
+  zone_id         = data.aws_route53_zone.primary[0].zone_id
+  name            = local.www_domain
+  type            = "AAAA"
+  allow_overwrite = true
 
   alias {
     name                   = aws_cloudfront_distribution.site.domain_name
